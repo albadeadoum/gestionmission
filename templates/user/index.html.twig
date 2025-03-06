@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateur{% endblock %}
+
+{% block body %}
+
+<div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Liste des Utilisateurse</h3> <a href="{{ path('app_user_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i></a>
+              </div>
+              <div class="card-body">
+       
+       <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Roles</th>
+                <th scope="col">Password</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Prenom</th>
+                <th scope="col">Date Creation</th>
+                <th scope="col">Status</th>
+                <th scope="col">Mission</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{#{{ user.password }}#}******</td>
+                <td>{{ user.nom }}</td>
+                <td>{{ user.prenom }}</td>
+                <td>{{ user.CreateDate ? user.CreateDate|date('d-m-Y') : '' }}</td>
+                <td><a {% if user.status == "ACTIF" %}class="btn btn-success"{% else %}class="btn btn-danger"{% endif %}>{{ user.status }}</a></td>
+                <td>{{ user.mission }}</td>
+                <td>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    <a class="btn">{{ include('user/_delete_form.html.twig') }}</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">Aucun Utilisateurs</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+    
+    
+
+    
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Entretiens{% endblock %}
+
+{% block body %}
+<div class="row align-items-start">
+    <div class="col">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Liste des Entretiens</h3>
+                {% if is_granted('ROLE_ADMIN') %}
+                    {#
+                    <a href="{{ path('app_piece_new') }}" style="float: right;" class="btn btn-primary"> 
+                        <i class="fa-sharp fa-solid fa-plus"></i>
+                    </a>
+                    
+
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPieceModal">
+                        <i class="fa-solid fa-plus"></i> Ajouter
+                    </button>#}
+
+                    <a   data-bs-toggle="modal" data-bs-target="#addPieceModal" style="float: right;" class="btn btn-primary"> 
+                        <i class="fa-sharp fa-solid fa-plus"></i>
+                    </a>
+                    
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <table id="example2" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Véhicule</th>
+                            <th>Marque</th>
+                            <th>Description</th>
+                            <th>Quantité</th>
+                            <th>Coût</th>
+                            <th>Observation</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for piece in pieces %}
+                            <tr data-id="{{ piece.id }}">
+                                <td>{{ piece.Date ? piece.Date|date('d-m-Y') : '' }}</td>
+                                <td>{{ piece.Vehicule }}</td>
+                                <td>{{ piece.Vehicule.Marque }}</td>
+                                <td>{{ piece.Nom }}</td>
+                                <td>{{ piece.Quantitite }}</td>
+                                <td>{{ piece.cout }} F CFA</td>
+                                <td>{{ piece.Observation }}</td>
+                                <td>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        {#<a href="{{ path('app_piece_edit', {'id': piece.id}) }}" class="btn btn-info">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>#}
+                                        
+                                        <a href="#" class="btn btn-info edit-btn_piece" data-id="{{ piece.id }}">
+                                            <i class="fas fa-edit"></i> 
+                                        </a>
+                                                        {% endif %}
+                                    <button onclick="imprimerPiece({{ piece.id }})" class="btn btn-secondary">
+                                        <i class="fa-solid fa-print"></i> 
+                                    </button>
+                                    <a class="btn">{{ include('piece/_delete_form.html.twig') }}</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8">Aucun enregistrement trouvé</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal pour Ajouter une Pièce -->
+<div class="modal fade" id="addPieceModal" tabindex="-1" aria-labelledby="addPieceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPieceModalLabel">Ajouter une Pièce</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPieceForm">
+                    <div class="mb-3">
+                        <label for="vehicule" class="form-label">Véhicule</label>
+                        <input type="text" class="form-control" id="vehicule" name="vehicule" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="marque" class="form-label">Marque</label>
+                        <input type="text" class="form-control" id="marque" name="marque" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantite" class="form-label">Quantité</label>
+                        <input type="number" class="form-control" id="quantite" name="quantite" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cout" class="form-label">Coût</label>
+                        <input type="number" class="form-control" id="cout" name="cout" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observation" class="form-label">Observation</label>
+                        <textarea class="form-control" id="observation" name="observation"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modifier des donnée chauffeur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editModalContent"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+<!-- Script pour l'impression -->
+<script>
+    function imprimerPiece(id) {
+        var ligne = document.querySelector("tr[data-id='" + id + "']").children;
+        var contenu = `
+            <html>
+            <head>
+                <title>Fiche d’Anomalies ou de Demande d’Intervention</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; }
+                    .header, h2, h3 { text-align: center; }
+                    .logo { text-align: center; margin-bottom: 20px; }
+                    .logo img { width: 120px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                    .signature { margin-top: 30px; text-align: left; }
+                </style>
+            </head>
+            <body>
+                <div class="logo">
+                    <img src="{{ absolute_url(asset('ins-logo.png')) }}" alt="Logo Niger">
+                </div>
+                <h2>RÉPUBLIQUE DU NIGER</h2>
+                <h3>MINISTÈRE DE L’ÉCONOMIE ET DES FINANCES</h3>
+                <h4>INSTITUT NATIONAL DE LA STATISTIQUE</h4>
+                <h3>FICHE D’ANOMALIES OU DE DEMANDE D’INTERVENTION</h3>
+
+                <table>
+                    <tr><th>N° VÉHICULE :</th><td>${ligne[1].innerText}</td></tr>
+                    <tr><th>MARQUE :</th><td>${ligne[2].innerText}</td></tr>
+                    <tr><th>DATE :</th><td>${ligne[0].innerText}</td></tr>
+                </table>
+
+                <h4>Anomalies constatées :</h4>
+                <p>${ligne[3].innerText}</p>
+
+                <table>
+                    <tr><th>Quantité :</th><td>${ligne[4].innerText}</td></tr>
+                    <tr><th>Coût :</th><td>${ligne[5].innerText}</td></tr>
+                    <tr><th>Observation :</th><td>${ligne[6].innerText}</td></tr>
+                    <tr><th>Date de la dernière intervention :</th><td>../../2024</td></tr>
+                    <tr><th>Date de la dernière vidange :</th><td>../../2024</td></tr>
+                    <tr><th>Lieu de l’intervention :</th><td>Garage Sahel</td></tr>
+                    <tr><th>Date d’entrée :</th><td>… /…/2024</td></tr>
+                    <tr><th>Date de sortie :</th><td>… /…/2024</td></tr>
+                </table>
+
+                <h4>VISA</h4>
+                <p>CSL/INS : ……………………………..</p>
+                <p>DML/INS : ……………………………..</p>
+                <p>DRFM/INS : ……………………………..</p>
+                <p>CMP/OB/INS : …………………………</p>
+                <p>SG/INS : ……………………………..</p>
+
+                <h3 class="signature">APPROBATION DE LA DIRECTION GÉNÉRALE</h3>
+
+                <script>
+                    window.onload = function() {
+                        window.print();
+                    };
+                <\/script>
+            </body>
+            </html>
+        `;
+
+        var win = window.open("", "", "width=800,height=600");
+        win.document.write(contenu);
+        win.document.close();
+    }
+
+    
+
+
+    
+
+
+
+
+document.getElementById("addPieceForm").addEventListener("submit", function (e) {
+    e.preventDefault();  // Empêche la soumission normale du formulaire
+
+    const url = "{{ path('app_piece_new') }}";  // URL d'ajout de la pièce
+    const formData = new FormData(this);  // Récupère les données du formulaire
+
+    // Envoi AJAX
+    fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'  // Indique qu'il s'agit d'une requête AJAX
+        }
+    })
+    .then(response => response.json())  // Récupère la réponse JSON du serveur
+    .then(data => {
+        if (data.success) {
+            alert(data.message);  // Affiche le message de succès
+            location.reload();  // Recharge la page pour afficher la nouvelle pièce
+        } else {
+            alert("Erreur lors de l'ajout de la pièce.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);  // Affiche l'erreur dans la console
+    });
+
+    // Masquer le modal après l'ajout
+    const modal = new bootstrap.Modal(document.getElementById('addPieceModal'));
+    modal.hide();
+});
+
+
+
+
+
+
+
+// Fermer le modal après mise à jour
+document.getElementById("editPieceModal").classList.remove("show");
+const editModal = bootstrap.Modal.getInstance(document.getElementById('editPieceModal'));
+editModal.hide();
+
+</script>
+<script>
+
+
+
+            // Gestion de l'édition des piece
+                    document.querySelectorAll(".edit-btn_piece").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const pieceId = this.getAttribute("data-id");
+
+                            fetch(`/piece/${pieceId}/edit`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.form) {
+                                    document.getElementById("editModalContent").innerHTML = data.form;
+                                    const editModal = new bootstrap.Modal(document.getElementById("editModal"));
+                                    editModal.show();
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+
+
+                       
+                    // Soumission du formulaire d'édition en AJAX
+                    document.addEventListener("submit", function (event) {
+                        if (event.target && event.target.matches("#editPieceForm")) {
+                            event.preventDefault();
+                            const form = event.target;
+                            const formData = new FormData(form);
+                            console.log("test")
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("les données chaffeur mise à jour avec succès !");
+                                    location.reload(); // Recharger la page après la modification
+                                } else {
+                                    alert("Erreur : " + data.errors);
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+                        }
+                    });
+            });
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{{ form_start(form) }}
+<div class="form-group">
+    {{ form_label(form.Vehicule, 'Véhicule libre') }}
+    {{ form_widget(form.Vehicule, { 'attr': { 'class': 'form-control' } }) }}
+    {% if form.Vehicule.vars.errors|length > 0 %}
+        <span style="color: red;">{{ form_errors(form.Vehicule) }}</span>
+    {% endif %}
+</div>
+
+<div class="form-group">
+    {{ form_label(form.Chauffeur, 'Chauffeur libre') }}
+    {{ form_widget(form.Chauffeur, { 'attr': { 'class': 'form-control' } }) }}
+    {% if form.Chauffeur.vars.errors|length > 0 %}
+        <span style="color: red;">{{ form_errors(form.Chauffeur) }}</span>
+    {% endif %}
+</div>
+
+{# Autres champs du formulaire #}
+{{ form_widget(form) }}
+
+<button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+<button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+{{ form_end(form) }}

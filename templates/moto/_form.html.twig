@@ -1,0 +1,29 @@
+{#{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+{{ form_end(form) }}
+
+#}
+
+{{ form_start(form, {
+    'attr': {'id': 'editMotoForm'},
+    'action': path('app_moto_edit', {'id': moto.id}),
+    'method': 'POST'
+}) }}
+
+    {{ form_widget(form._token) }}
+    {{ form_row(form.immatriculation) }}
+    {{ form_row(form.marque) }}
+    {{ form_row(form.etat) }}
+    {{ form_row(form.utilisateur) }}
+ 
+     <div class="text-end mt-4">
+    <button type="submit" class="btn btn-success mt-3">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+     </div>
+{{ form_end(form) }}
+
+
+

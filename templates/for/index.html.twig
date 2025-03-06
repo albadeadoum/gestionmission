@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Piece index{% endblock %}
+
+{% block body %}
+
+<div class="row align-items-start">
+        <div class="col">
+                <!-- Form Element sizes -->
+                <div class="card card-info">
+                <div class="card-header">
+                    <h2 class="card-title"> {% for piece1 in pieces %} {% if loop.first %}{{ piece1.Vehicule }}{% endif %}{% endfor %}    Liste des Entretiens</h2> <a href="{{ path('app_piece_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>
+                </div>
+                <div class="card-body">
+                      <table id="example2" class="table table-striped">
+        <thead>
+            <tr>
+                {#<th>Véhicule</th>#}
+                <th>Date</th>
+                <th>Description</th>
+                <th>Quantitite</th>
+                <th>Coût</th>
+                <th>Observation</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for piece in pieces %}
+            <tr>
+                {#<td> {{ piece.Vehicule }}</td>#}
+                <td>{{ piece.Date ? piece.Date|date('d-m-Y') : '' }}</td>
+                <td>{{ piece.Nom }}</td>
+                <td>{{ piece.Quantitite }}</td>
+                 <td>{{ piece.cout  }} F CFA</td>
+                <td>{{ piece.Observation }}</td>
+                <td>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_piece_edit', {'id': piece.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    <a class="btn">{{ include('piece/_delete_form.html.twig') }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+   
+
+{% endblock %}

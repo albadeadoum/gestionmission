@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New UserAction{% endblock %}
+
+{% block body %}
+    <h1>Create new UserAction</h1>
+
+    {{ include('user_action/_form.html.twig') }}
+
+    <a href="{{ path('app_user_action_index') }}">back to list</a>
+{% endblock %}

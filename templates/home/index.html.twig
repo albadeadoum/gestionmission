@@ -1,0 +1,375 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+
+<div class="row align-items-start">
+       <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Calendrier des Missions</h3> <a href="{{ path('app_evenement_index') }}" style="float: right;" class="btn btn-primary"><i class="fa-solid fa-calendar-days"></i></a>
+              </div>
+              <div class="card-body">
+                  <div id='calendrier' >
+                </div>
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+     <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+              
+                <h3 class="card-title">Liste des missions</h3>
+                
+              </div>
+              <div class="card-body">
+                  <table class="table table-striped"  id="example3">
+                            <thead>
+                                <tr>
+                                    <th>Objet</th>
+                                    <th>Vehicule</th>
+                                    <th>Chauffeur</th>
+                                    <th>Début</th>
+                                    <th>Fin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for evenement in evenements %}
+                                <tr>
+                                    <td>{{ evenement.titre }}</td>
+                                    <td>{{ evenement.Vehicule }}</td>
+                                    <td>{{ evenement.Chauffeur }}</td>
+                                    <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
+                                    <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="9">no records found</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+     </div>
+ </div>
+
+   <div class="row align-items-start">
+       <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Liste des Vehicules</h3>
+              </div>
+              <div class="card-body">
+              <table id="example1" class="table table-striped">
+                        <thead>
+                            <tr>
+                                
+                                <th>Imatriculation</th>
+                                <th>Marque </th>
+                                <th>Etat </th>
+                                <th>Situation </th>
+                                
+                               
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for vehicule in vehicules %}
+                            <tr>
+                                <td>{{ vehicule.Imatriculation }}</td>
+                                <td>{{ vehicule.Marque }}</td>
+                                <td> <a {% if vehicule.Etat == "Bon" %}class="btn btn-success"{% else %}class="btn btn-danger"{% endif %}>{{ vehicule.Etat }}</a></td>
+                                <td>
+                                 {% set vehiculeLibre = true %}
+                                 {% set currentDate = "now"|date("Y-m-d") %}
+                                    {% for evenement in vehicule.evenements %}
+                                        {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                                           {% set vehiculeLibre = false %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if vehiculeLibre == false %}
+                                    <a class="btn btn-danger">Véhicule non libre</a>
+                                    {% endif %}
+                                    {% if vehiculeLibre == true %}
+                                    <a class="btn btn-success">Véhicule libre</a>
+                                    {% endif %}
+                                </td>
+                               {# <td>
+                                    {% set currentDate = "now"|date("Y-m-d") %}
+                                    {% for evenement in vehicule.evenements %}
+                                        {% if evenement.debut.format("Y-m-d") > currentDate %}
+                                           <a  class="btn btn-warning">{{ vehicule.getEvenements[0].titre }} - {{ vehicule.getEvenements[0].debut.format('Y-m-d') }}</a>
+                                        {% endif %}
+                                    {% endfor %}-
+                                </td>#}
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                      
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+    <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+              
+                <h3 class="card-title">Chauffeur</h3>
+                
+              </div>
+              <div class="card-body">
+                  <table id="example4" class="table table-striped">
+        <thead>
+            <tr>
+                
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Numero</th>
+                <th>Situation</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+        {% for chauffeur in chauffeurs %}
+            <tr>
+                <td>{{ chauffeur.Nom }}</td>
+                <td>{{ chauffeur.Prenom }}</td>
+                <td>{{ chauffeur.Numero }}</td>
+                <td>
+                        {% set chauffeurLibre = true %}
+                        {% set currentDate = "now"|date("Y-m-d") %}
+                        {% for evenement in chauffeur.evenements %}
+                            {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                                    {% set chauffeurLibre = false %}
+                            {% endif %}
+                            {% endfor %}
+                            {% if chauffeurLibre == false %}
+                            <a class="btn btn-danger">Chauffeur non libre</a>
+                            {% endif %}
+                            {% if chauffeurLibre == true %}
+                            <a class="btn btn-success">Chauffeur libre</a>
+                            {% endif %}
+                </td>
+                {#<td>
+                {% for evenement in chauffeur.evenements %}
+                    {% if evenement.debut.format("Y-m-d") > currentDate %}
+                       <a class="btn btn-warning">{{ chauffeur.getEvenements[0].titre }} -  {{ chauffeur.getEvenements[0].debut.format('Y-m-d')}}</a>
+                    {% endif %}
+                    {% endfor %}
+                </td>#}
+                
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+     </div>
+              <!-- /.card-body -->
+ </div>
+ </div>
+ </div>
+
+ 
+ <div class="row align-items-start">
+       <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Assurances</h3> 
+              </div>
+              <div class="card-body">
+                  <table  class="table table-striped"  id="example1" >
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Engin</th>
+                <th>Numéro</th>
+                <th>Début</th>
+                <th>Fin</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+        {# Définir les dates pour la gestion des couleurs #}
+        {% set today = 'now'|date('Y-m-d') %}
+        {% set warning_threshold = 'now +15 days'|date('Y-m-d') %}
+        
+
+        {# Tri des assurances par date de fin, en plaçant les dates null à la fin #}
+        {% for assurance in assurances|sort((a, b) => (a.fin ?? '9999-12-31') <=> (b.fin ?? '9999-12-31')) %}
+            {% set date_fin = assurance.fin ? assurance.fin|date('Y-m-d') : '' %}
+            <tr 
+                {% if date_fin and date_fin < today %} style="background-color:rgb(220, 29, 29); color: white;" {% endif %}
+                {% if date_fin and date_fin >= today and date_fin <= warning_threshold %} style="background-color:rgb(166, 130, 139);" {% endif %}
+            >
+                <td>
+                    {% if assurance.vehicule %}
+                        Véhicule
+                    {% elseif assurance.moto %}
+                        Moto
+                    {% else %}
+                        Non défini
+                    {% endif %}
+                </td>
+                <td>
+                    {% if assurance.vehicule %}
+                       {{ assurance.vehicule }} 
+                    {% elseif assurance.moto %}
+                        {{ assurance.moto }} 
+                    {% else %}
+                        Non défini
+                    {% endif %}
+                </td>
+                <td>{{ assurance.Numero }}</td>
+                <td>{{ assurance.debut ? assurance.debut|date('Y-m-d') : '' }}</td>
+                <td>
+                    {% if date_fin and date_fin < today %}
+                        <strong>Expirée ({{ date_fin }})</strong>
+                    {% elseif date_fin and date_fin >= today and date_fin <= warning_threshold %} 
+                                <strong> ({{ date_fin }})  {# {{ date_fin  - today }} #} </strong>
+                    {% else %}
+                        {{ date_fin }} 
+                    {% endif %}
+                    
+                </td>
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucun enregistrement trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+     <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+              
+                <h3 class="card-title">Liste des affectations moto</h3>
+                
+              </div>
+              <div class="card-body">
+                 <table id="example4" class="table table-striped">
+        <thead>
+            <tr>
+                {#<th>Id</th>#}
+                <th>Immatriculation</th>
+                <th>Marque</th>
+                <th>Etat</th>
+                <th>Utilisateur</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+        {% for moto in motos %}
+            <tr>
+                {#<td>{{ moto.id }}</td>#}
+                <td>{{ moto.immatriculation }}</td>
+                <td>{{ moto.marque }}</td>
+                <td>{{ moto.etat }}</td>
+                <td>{{ moto.utilisateur }}</td>
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+     </div>
+ </div>
+ 
+   
+
+
+
+   
+    <!-- fullcalandra -->
+           
+   <script src="{{asset('assets/fullcalendar-6.1.6/dist/index.global.min.js')}}"></script>
+
+        
+            
+     <script>
+        window.onload = () => {
+            let calendarElt = document.querySelector("#calendrier")
+            let calendar = new FullCalendar.Calendar(calendarElt, {
+                initialView: 'multiMonthYear',
+                locale : 'fr',
+                TimeZone :  'Europe/Paris',
+                views: {
+                    multiMonthFourMonth: {
+                    type: 'multiMonth',
+                    duration: { months: 4 }
+                    }
+                },
+                 eventTimeFormat: {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        omitZeroMinute: true,
+                        meridiem: false
+                    },
+                
+                    events: {{ data|raw }},
+                    editable: true,
+                    eventResizableFromStart: true,
+
+                    headerToolbar: {
+                      start: 'prev,next today',
+                      center: '',
+                      end: ''
+                    },
+                    
+
+               
+
+                   eventClick: function(info) {
+                  // Récupérer les informations de l'événement
+                  let eventTitle = info.event.title;
+                  let eventStart = info.event.start;
+                  let Activite = info.event.Vehicule;
+                  let eventEnd = info.event.end;         
+                  
+                  // Afficher les informations dans une boîte de dialogue
+                  alert(" : " + eventTitle + "\n" +
+                        "Début : " + eventStart + "\n" +
+                        "Fin : " + eventEnd);
+                }
+            });
+
+            
+
+            calendar.render()
+        }
+      </script>
+
+{% endblock %}

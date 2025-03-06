@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<!-- Contenu du modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+           {{ form_start(form, {'action': path('app_kilometre_edit', {'id': 1})}) }}
+                {{ form_widget(form) }}
+                <button class="btn">{{ button_label|default('Save') }}</button>
+            {{ form_end(form) }}
+
+
+        </div>
+    </div>
+</div>
+
+        <script>
+$(document).ready(function() {
+    // Gérer le clic sur le lien "Modifier"
+    $('a[data-toggle="modal"]').on('click', function() {
+        var partieId = $(this).data('partie-id');
+        var url = '{{ path('app_kilometre_edit', {'id': 'PARTIE_ID'}) }}'.replace('PARTIE_ID', partieId);
+
+        // Charger le contenu du modal depuis un autre fichier Twig
+        $('#myModalContainer').load(url, function() {
+            // Afficher le modal après avoir chargé son contenu
+            $('#myModal').modal('show');
+        });
+    });
+});
+</script>
+
+<script src="{{asset('assets/plugins/jquery/jquery.min.js')}}"></script>
+            <!-- jQuery UI 1.11.4 -->
+            <script src="{{asset('assets/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
+            <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+            <script>
+            $.widget.bridge('uibutton', $.ui.button)
+            </script>
+            <!-- Bootstrap 4 -->
+            <script src="{{asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+{% endblock %}

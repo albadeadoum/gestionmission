@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fiche de Sortie{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3>FICHE D’ANOMALIES OU DE DEMANDE D’INTERVENTION</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <td><strong>N° VÉHICULE :</strong></td>
+                    <td>{{ piece.vehicule }}</td>
+                    <td><strong>DIRECTION :</strong></td>
+                    <td>{{ piece.direction }}</td>
+                    <td><strong>DATE :</strong></td>
+                    <td>{{ piece.Date ? piece.Date|date('d/m/Y') : '' }}</td>
+                </tr>
+            </table>
+
+            <h5 class="mt-3">ANOMALIES CONSTATÉES PAR LE MÉCANICIEN :</h5>
+            <p>{{ piece.description }}</p>
+
+            <table class="table table-bordered">
+                <tr>
+                    <td><strong>Date de la dernière intervention :</strong></td>
+                    <td>{{ piece.derniereIntervention ? piece.derniereIntervention|date('d/m/Y') : '...' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date de la dernière vidange :</strong></td>
+                    <td>{{ piece.derniereVidange ? piece.derniereVidange|date('d/m/Y') : '...' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Lieu de l’intervention :</strong></td>
+                    <td>{{ piece.lieuIntervention }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date d’entrée :</strong></td>
+                    <td>{{ piece.dateEntree ? piece.dateEntree|date('d/m/Y') : '...' }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date de sortie :</strong></td>
+                    <td>{{ piece.dateSortie ? piece.dateSortie|date('d/m/Y') : '...' }}</td>
+                </tr>
+            </table>
+
+            <h5 class="mt-3">VISAS :</h5>
+            <ul>
+                <li><strong>CSL/INS :</strong> __________________</li>
+                <li><strong>DML/INS :</strong> __________________</li>
+                <li><strong>DRFM/INS :</strong> __________________</li>
+                <li><strong>CMP/OB/INS :</strong> _______________</li>
+                <li><strong>SG/INS :</strong> __________________</li>
+            </ul>
+
+            <h5 class="text-center mt-4">APPROBATION DE LA DIRECTION GÉNÉRALE</h5>
+
+            <button onclick="window.print()" class="btn btn-primary mt-3">
+                <i class="fa-solid fa-print"></i> Imprimer la fiche
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

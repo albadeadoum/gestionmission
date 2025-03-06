@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+   <div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Mission</h3> {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
+                
+              </div>
+              <div class="card-body">
+
+    <table class="table table-striped"  id="example1" >
+        <thead>
+            <tr>
+                <th>Objet</th>
+                <th>Vehicule</th>
+                <th>Chauffeur</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Description</th>
+                <th>Destination</th>
+                <th>Dotation</th>
+                <th>Montant</th>
+                {% if is_granted('ROLE_ADMIN') %}
+                {#<th>Background</th>
+                <th>Border</th>
+                <th>Text</th>#}
+                <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for evenement in evenements %}
+            <tr>
+                <td>{{ evenement.titre }}</td>
+                <td>{{ evenement.Vehicule }}</td>
+                <td>{{ evenement.Chauffeur }}</td>
+                <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
+                <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
+                <td>{{ evenement.description }}</td>
+                <td>{{ evenement.Destination }}</td>
+                <td>{{ evenement.Dotation }}</td>
+                <td>{{ evenement.Montant }}</td>
+                {% if is_granted('ROLE_ADMIN') %}
+                {#<td style = "color:{{ evenement.backgroundColor }}"><i class="fa-solid fa-square fa-2xl"></i></td>
+                <td style = "color:{{ evenement.borderColor }}"> <i class="fa-solid fa-square fa-2xl"></i></td>
+                <td style = "color:{{ evenement.textColor }}"> <i class="fa-solid fa-square fa-2xl"></i></td>#}
+                <td>
+                    
+                    {#<a href="{{ path('app_for_carburant_evenement', {'id': evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-gas-pump"></i></a>#}
+                    <a href="" class="btn btn-secondary"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>
+                    <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
+                    <a class="btn">{{ include('evenement/_delete_form.html.twig') }}</a>
+                   
+                </td>
+                 {% endif %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+            </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+
+
+    <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createEventModalLabel">Enregistrement d'une nouvelle Mission </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulaire Agent -->
+                {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.Vehicule, 'Véhicule libre') }}
+                        {{ form_widget(form.Vehicule, { 'attr': { 'class': 'form-control' } }) }}
+                        {% if form.Vehicule.vars.errors|length > 0 %}
+                            <span style="color: red;">{{ form_errors(form.Vehicule) }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.Chauffeur, 'Chauffeur libre') }}
+                        {{ form_widget(form.Chauffeur, { 'attr': { 'class': 'form-control' } }) }}
+                        {% if form.Chauffeur.vars.errors|length > 0 %}
+                            <span style="color: red;">{{ form_errors(form.Chauffeur) }}</span>
+                        {% endif %}
+                    </div>
+
+                    {# Autres champs du formulaire #}
+                    {{ form_widget(form) }}
+
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                    {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if openContactModal %}
+            var contactModal = new bootstrap.Modal(document.getElementById('createEventModal'));
+            contactModal.show();
+        {% endif %}
+    });
+</script>
+
+
+    
+    
+{% endblock %}

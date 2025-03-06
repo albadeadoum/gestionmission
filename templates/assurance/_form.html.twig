@@ -1,0 +1,23 @@
+
+
+{{ form_start(form, {
+    'attr': {'id': 'editAssuranceForm'},
+    'action': path('app_assurance_edit', {'id': assurance.id}),
+    'method': 'POST'
+}) }}
+    {{ form_widget(form._token) }}
+    {{ form_row(form.Numero) }}
+    {{ form_row(form.debut) }}
+    {{ form_row(form.fin) }}
+    {{ form_row(form.type) }}
+    <div id="vehicule-field-edit" style="display: none;">
+                            {{ form_row(form.vehicule) }}
+                        </div>
+                        <div id="moto-field-edit" style="display: none;">
+                            {{ form_row(form.moto) }}
+                        </div>
+    <button type="submit" class="btn btn-success mt-3">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+{{ form_end(form) }}
+

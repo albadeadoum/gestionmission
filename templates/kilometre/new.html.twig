@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Kilometre{% endblock %}
+
+{% block body %}
+    <h1>Create new Kilometre</h1>
+
+    {{ include('kilometre/_form.html.twig') }}
+
+    <a href="{{ path('app_kilometre_index') }}">back to list</a>
+{% endblock %}

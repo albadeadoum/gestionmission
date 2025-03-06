@@ -1,0 +1,32 @@
+{#<div class="row align-items-start">
+       <div class="col-12">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Chauffeur</h3>
+              </div>
+              <div class="card-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button class="btn btn-success" ">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+#}
+
+{{ form_start(form, {
+    'attr': {'id': 'editChauffeurForm'},
+    'action': path('app_chauffeur_edit', {'id': chauffeur.id}),
+    'method': 'POST'
+}) }}
+    {{ form_widget(form._token) }}
+
+    
+   
+    <button type="submit" class="btn btn-success mt-3" > <i class="fas fa-save"></i> Mettre à jour </button>
+{{ form_end(form) }}
+

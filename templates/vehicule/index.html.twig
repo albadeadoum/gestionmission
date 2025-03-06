@@ -1,0 +1,257 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}liste des véhicules{% endblock %}
+
+{% block body %}
+    <div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Parc Auto</h3> {#<a href="{{ path('app_kilometre_edit', {'id': 1}) }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-gear"></i></a>#} {% if is_granted('ROLE_ADMIN') %}
+                <a data-bs-toggle="modal" data-bs-target="#addVehiculeModal" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>{% endif %}
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Imatriculation</th>
+                <th>Marque</th>
+                <th>Etat</th>
+                <th>Reservation</th>
+                <th>vidange</th>
+                <th>à vidanger</th>
+                <th>change les pneus à</th>
+                <th>Situation </th>
+                {#<th>Activité </th>#}
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vehicule in vehicules %}
+            <tr>
+                <td>{% if vehicule.imageName %}<img src="{{ vich_uploader_asset(vehicule, 'imageFile') }}" alt="{{ vehicule.imageName }}" style="width: 50px; height: auto;">{% else %}Pas d'image{% endif %}</td>
+                <td>{{ vehicule.Imatriculation }}</td>
+                <td>{{ vehicule.Marque }}</td>
+                <td><a {% if vehicule.Etat == "Bon" %}class="btn btn-success"
+                       {% else %}class="btn btn-danger"{% endif %}>{{ vehicule.Etat }}</a>
+                </td>
+                <td>
+                    {% set currentDate = "now"|date("Y-m-d") %}
+                    {% set nombre = 0 %}
+                    {% for evenement in vehicule.evenements %}
+                    {% if evenement.debut.format("Y-m-d") > currentDate %}
+                    {% set nombre =  nombre + 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    {% if nombre > 0 %}   
+                        <a class="btn btn-warning">{{ nombre }} - Réservation</a>
+                    {% endif %}
+                    
+                
+                </td>
+                <td>
+                    {{ vehicule.Compteur }} Km     
+                </td>
+                 <td>
+                    {{ vehicule.Compteur + 5000 }}  Km    
+                </td>
+                 <td>
+                    {{ vehicule.pneus + 50000 }} Km    
+                </td>
+                <td>
+                                 {% set vehiculeLibre = true %}
+                                 {% set currentDate = "now"|date("Y-m-d") %}
+                                    {% for evenement in vehicule.evenements %}
+                                        {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                                           {% set vehiculeLibre = false %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if vehiculeLibre == false %}
+                                    <a class="btn btn-danger">Véhicule non libre</a>
+                                    {% endif %}
+                                    {% if vehiculeLibre == true %}
+                                    <a class="btn btn-success">Véhicule libre</a>
+                                    {% endif %}
+                </td>
+                {#<td>
+                    {% for evenement in vehicule.evenements %}
+                    {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                            {{ vehicule.getEvenements[0].titre }} 
+                    {% endif %}
+                    
+                    {% endfor %}
+                   
+                </td>#}
+                <td>
+                
+                    {#<a data-bs-toggle="modal" data-bs-target="#vehiculeModal{{ vehicule.id }}" class="btn btn-info"><i class="fa-solid fa-eye fa-xl" style="color: #FFFFF;"></i></a>#}
+                    <a href="#" class="btn btn-info show-btn_vehicule" data-id="{{ vehicule.id }}"><i class="fa-solid fa-eye fa-xl" style="color: #FFFFF;"></i></a>
+                    <a href="{{ path('app_for_vehicule_evenement', {'id': vehicule.id}) }}" ><i class="fa-solid fa-list fa-2xl" style="color: #4980df;"></i></a>
+                     <a href="{{ path('app_for_vehicule', {'id': vehicule.id}) }}" class="btn btn-info"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_vehicule_edit', {'id': vehicule.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    <a class="btn">{{ include('vehicule/_delete_form.html.twig') }}</a>
+                    <a href="#" class="btn btn-warning edit-btn_vehicule" data-id="{{ vehicule.id }}">
+                        <i class="fas fa-edit"></i> 
+                    </a>
+                    
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+</div>
+
+
+<!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="showModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                           <div id="showModalContent"></div> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Bootstrap -->
+<div class="modal fade" id="addVehiculeModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Ajouter un nouveau vehicule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form, {'attr': {'id': 'VehiculeForm'}}) }}
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editVehiculeModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modifier l'Assurance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editVehiculeForm"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+document.querySelectorAll(".show-btn_vehicule").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const vehiculeId = this.getAttribute("data-id");
+
+                            fetch(`/vehicule/${vehiculeId}`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            }
+                            ).then(response => response.json())
+                            .then(data => {
+                                if (data.vehicule) {
+                                    document.getElementById("showModalContent").innerHTML = data.vehicule;
+                                    const showModal = new bootstrap.Modal(document.getElementById("showModal"));
+                                    showModal.show();
+                                }
+                            })
+                            
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+            });
+
+
+</script>
+<script>
+// Gestion de l'édition des assurances
+                    document.querySelectorAll(".edit-btn_vehicule").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const vehiculeId = this.getAttribute("data-id");
+
+                            fetch(`/vehicule/${vehiculeId}/edit`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.form) {
+                                    document.getElementById("editVehiculeForm").innerHTML = data.form;
+                                    const editModal = new bootstrap.Modal(document.getElementById("editVehiculeModal"));
+                                    editModal.show();
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+
+
+
+                    // Soumission du formulaire d'édition en AJAX
+                    document.addEventListener("submit", function (event) {
+                        if (event.target && event.target.matches("#editVehiculeForm")) { 
+                            event.preventDefault();
+                            const form = event.target;
+                            const formData = new FormData(form);
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("les données moto mise à jour avec succès !");
+                                    location.reload(); // Recharger la page après la modification
+                                } else {
+                                    alert("Erreur : " + data.errors);
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+                        }
+                    });
+            });
+
+
+</script>
+
+                    
+
+
+                    
+
+
+                   
+
+{% endblock %}

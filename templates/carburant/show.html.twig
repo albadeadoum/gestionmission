@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carburant{% endblock %}
+
+{% block body %}
+    <h1>Carburant</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ carburant.id }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ carburant.Montant }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ carburant.date ? carburant.date|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_carburant_index') }}">back to list</a>
+
+    <a href="{{ path('app_carburant_edit', {'id': carburant.id}) }}">edit</a>
+
+    {{ include('carburant/_delete_form.html.twig') }}
+{% endblock %}

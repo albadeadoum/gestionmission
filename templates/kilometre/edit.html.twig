@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Kilometre{% endblock %}
+
+{% block body %}
+    <h1>Edit Kilometre</h1>
+
+    {{ include('kilometre/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_kilometre_index') }}">back to list</a>
+
+    {{ include('kilometre/_delete_form.html.twig') }}
+{% endblock %}

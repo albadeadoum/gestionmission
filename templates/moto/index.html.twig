@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Moto{% endblock %}
+
+{% block body %}
+    <div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Liste des Motos</h3> {% if is_granted('ROLE_ADMIN') %} <a  style="float: right;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMotoModal"><i class="fa-sharp fa-solid fa-plus"></i></a>
+                {#<a href="{{ path('app_moto_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>#}{% endif %}
+              </div>
+              <div class="card-body">
+
+    <table id="example1" class="table table-striped">
+        <thead>
+            <tr>
+                {#<th>Id</th>#}
+                <th>Immatriculation</th>
+                <th>Marque</th>
+                <th>Etat</th>
+                <th>Utilisateur</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for moto in motos %}
+            <tr>
+                {#<td>{{ moto.id }}</td>#}
+                <td>{{ moto.immatriculation }}</td>
+                <td>{{ moto.marque }}</td>
+                <td>{{ moto.etat }}</td>
+                <td>{{ moto.utilisateur }}</td>
+                <td>
+                    {#<a href="{{ path('app_moto_show', {'id': moto.id}) }}">show</a>#}
+                    
+
+                    <a href="#" class="btn btn-warning edit-btn_moto" data-id="{{ moto.id }}">
+                        <i class="fas fa-edit"></i> 
+                    </a>
+                    {#<a href="{{ path('app_moto_edit', {'id': moto.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>#}
+                    <a class="btn">{{ include('moto/_delete_form.html.twig') }}</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+            </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+
+    <!-- Modal Bootstrap -->
+<div class="modal fade" id="addMotoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Ajouter un nouveau Moto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form, {'attr': {'id': 'MotoForm'}}) }}
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modifier des donnée moto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editModalContent"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Toast de confirmation -->
+<div class="toast position-fixed bottom-0 end-0 p-3" id="updateToast">
+    <div class="toast-body bg-success text-white">
+        Mise à jour réussie !
+    </div>
+</div>
+
+<!-- Conteneur d'erreurs (peut être ajouté dynamiquement) -->
+<div class="errors"></div>
+
+<script>
+
+// Gestion de l'édition des assurances
+                  /*  document.querySelectorAll(".edit-btn_moto").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const motoId = this.getAttribute("data-id");console.log(button);
+
+                            fetch(`/moto/${motoId}/edit`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.form) {
+                                    document.getElementById("editModalContent").innerHTML = data.form;
+                                    const editModal = new bootstrap.Modal(document.getElementById("editModal"));
+                                    editModal.show();
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+
+
+
+                    // Soumission du formulaire d'édition en AJAX
+                    document.addEventListener("submit", function (event) {
+                        if (event.target && event.target.matches("#editMotoForm")) {
+                            event.preventDefault();
+                            const form = event.target;
+                            const formData = new FormData(form);
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("les données moto mise à jour avec succès !");
+                                    location.reload(); // Recharger la page après la modification
+                                } else {
+                                    alert("Erreur : " + data.errors);
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+                        }
+                    });
+            });*/
+
+            // Gestion de l'ouverture de la modal d'édition
+document.querySelectorAll(".edit-btn_moto").forEach(button => {
+    button.addEventListener("click", async function(event) {
+        event.preventDefault();
+        const motoId = this.dataset.id;
+
+        try {
+            const response = await fetch(`/moto/${motoId}/edit`, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            
+            if (!response.ok) throw new Error('Erreur réseau');
+            
+            const data = await response.json();
+            
+            if (data.form) {
+                const modalContent = document.getElementById("editModalContent");
+                modalContent.innerHTML = data.form;
+                new bootstrap.Modal('#editModal').show();
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Impossible de charger le formulaire");
+        }
+    });
+});
+
+// Gestion de la soumission du formulaire (une seule fois)
+document.addEventListener("submit", async function(event) {
+    if (event.target.matches("#editMotoForm")) {
+        event.preventDefault();
+        const form = event.target;
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) throw new Error(data.errors || 'Erreur inconnue');
+
+            /*/ Mise à jour dynamique au lieu de recharger
+            const toast = new bootstrap.Toast(document.getElementById('updateToast'));
+            toast.show();*/
+             location.reload(); // Recharger la page après la modification
+            
+            // Fermer la modal
+            bootstrap.Modal.getInstance('#editModal').hide();
+            
+            // Mettre à jour les données dans le DOM si nécessaire
+            // document.querySelector(`[data-moto-id="${motoId}"]`).innerText = newValue;
+
+        } catch (error) {
+            console.error("Erreur:", error);
+            const errorDiv = form.querySelector('.errors') || document.createElement('div');
+            errorDiv.className = 'errors alert alert-danger';
+            errorDiv.textContent = Array.isArray(error.message) 
+                ? error.message.join('\n')
+                : error.message;
+            form.prepend(errorDiv);
+        }
+    }
+});
+   </script>
+   
+    {#<a href="{{ path('app_moto_new') }}">Create new</a>#}
+{% endblock %}

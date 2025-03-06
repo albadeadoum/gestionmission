@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}liste des cahffeur{% endblock %}
+
+{% block body %}
+    
+<div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success" >
+              <div class="card-header" >
+                <h3 class="card-title">chauffeurs</h3> {% if is_granted('ROLE_ADMIN') %} <a style="float: right;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addChauffeurModal"><i class="fa-sharp fa-solid fa-plus"></i></a> 
+                {#<a href="{{ path('app_chauffeur_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>#}{% endif %}
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Date de Naissance </th>
+                <th>Numero de Téléphone</th>
+                <th>Adresse </th>
+                <th>Matricule </th>
+                <th>Statut </th>
+                <th>Situation </th>
+                <th>Reservation </th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for chauffeur in chauffeurs %}
+            <tr>
+                <td>{{ chauffeur.Prenom }}</td>
+                <td>{{ chauffeur.Nom }}</td>
+                <td>{{ chauffeur.dateNaiss|date('d-m-Y')  }}</td>
+                <td>{{ chauffeur.Numero }}</td>
+                <td>{{ chauffeur.adress }}</td>
+                <td>{{ chauffeur.matricule }}</td>
+                <td>{{ chauffeur.statut }}</td>
+                <td>
+                {% set chauffeurLibre = true %}
+                    {% set currentDate = "now"|date("Y-m-d") %}
+                        {% for evenement in chauffeur.evenements %}
+                            {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                                    {% set chauffeurLibre = false %}
+                            {% endif %}
+                            {% endfor %}
+                            {% if chauffeurLibre == false %}
+                            <a class="btn btn-danger">Chauffeur non libre</a>
+                            {% endif %}
+                            {% if chauffeurLibre == true %}
+                            <a class="btn btn-success">Chauffeur libre</a>
+                            {% endif %}
+                </td>
+                
+                <td>
+                    {% set currentDate = "now"|date("Y-m-d") %}
+                    {% set nombre = 0 %}
+                    {% for evenement in chauffeur.evenements %}
+                        {% if evenement.debut.format("Y-m-d") > currentDate %}
+                        {% set nombre =  nombre + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if nombre > 0 %}   
+                        <a class="btn btn-warning">{{ nombre }} - Réservation</a>
+                    {% endif %}
+                </td>
+                <td>
+                    
+                    <a href="{{ path('app_for_chauffeur_evenement', {'id': chauffeur.id}) }}" ><i class="fa-solid fa-list fa-2xl" style="color: #4980df;"></i></a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="#" class="btn btn-warning edit-btn_chauffeur" data-id="{{ chauffeur.id }}">
+                        <i class="fas fa-edit"></i> 
+                    </a>
+                    <a href="{{ path('app_chauffeur_edit', {'id': chauffeur.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    <a class="btn">{{ include('chauffeur/_delete_form.html.twig') }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+    
+
+
+    <!-- Modal Bootstrap -->
+<div class="modal fade" id="addChauffeurModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Ajouter un nouveau chauffeur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form, {'attr': {'id': 'chauffeurForm'}}) }}
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modifier des donnée chauffeur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editModalContent"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    
+
+            // Gestion de l'édition des assurances
+                    document.querySelectorAll(".edit-btn_chauffeur").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const chauffeurId = this.getAttribute("data-id");
+
+                            fetch(`/chauffeur/${chauffeurId}/edit`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.form) {
+                                    document.getElementById("editModalContent").innerHTML = data.form;
+                                    const editModal = new bootstrap.Modal(document.getElementById("editModal"));
+                                    editModal.show();
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+
+
+                       
+                    // Soumission du formulaire d'édition en AJAX
+                    document.addEventListener("submit", function (event) {
+                        if (event.target && event.target.matches("#editChauffeurForm")) {
+                            event.preventDefault();
+                            const form = event.target;
+                            const formData = new FormData(form);
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("les données chaffeur mise à jour avec succès !");
+                                    location.reload(); // Recharger la page après la modification
+                                } else {
+                                    alert("Erreur : " + data.errors);
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+                        }
+                    });
+            });
+
+
+            
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if openContactModal %}
+            var contactModal = new bootstrap.Modal(document.getElementById('addChauffeurModal'));
+            contactModal.show();
+        {% endif %}
+    });
+</script>
+
+{% endblock %}

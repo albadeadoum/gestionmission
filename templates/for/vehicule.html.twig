@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evenement index{% endblock %}
+
+{% block body %}
+   <div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                {% set lastVehicule = null %}
+                {% for evenement in evenements %}
+                    {% set currentVehicule = evenement.Vehicule %}
+                    {% if lastVehicule != currentVehicule %}
+                        <h3 class="card-title">{{ currentVehicule }} Liste des missions effetuée</h3>
+                        {% set lastVehicule = currentVehicule %}
+                    {% endif %}
+                {% endfor %} {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('app_evenement_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
+                
+              </div>
+              <div class="card-body">
+
+    <table class="table table-striped"  id="" >
+        <thead>
+            <tr>
+                <th>Statut</th>
+                <th>Titre</th>
+                <th>Chauffeur</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Description</th>
+                <th>Jours</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% set currentDate = "now"|date("Y-m-d") %}
+
+        {% set reservations = [] %}
+        {% set enCours = [] %}
+        {% set finis = [] %}
+
+        {% for evenement in evenements %}
+            {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                {% set enCours = enCours|merge([evenement]) %}
+            {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
+                {% set reservations = reservations|merge([evenement]) %}
+            {% else %}
+                {% set finis = finis|merge([evenement]) %}
+            {% endif %}
+        {% endfor %}
+
+        {% set sortedEvenements = reservations|merge(enCours)|merge(finis) %}
+
+        {% for evenement in sortedEvenements %}
+            <tr>
+                <td>
+                    {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                       <span class="status btn btn-success">En cours</span>
+                    {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
+                       <span class="status btn btn-warning">Réserver</span>
+                    {% else %}
+                       <span class="status btn btn-danger">Finie</span>
+                    {% endif %}
+                </td>
+                <td>{{ evenement.titre }}</td>
+                <td>{{ evenement.Chauffeur }}</td>
+                <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
+                <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
+                <td>{{ evenement.description }}</td>
+                <td>
+                {% if evenement.debut and evenement.fin %}
+                {# Calculate the date difference in days #}
+                {% set debutTimestamp = evenement.debut.timestamp() %}
+                {% set finTimestamp = evenement.fin.timestamp() %}
+                {% set duration = ((finTimestamp - debutTimestamp) / 86400) | round(0, 'floor') %}
+                {{ duration }}
+            {% else %}
+                N/A
+            {% endif %} Jours
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+            </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+    
+{% endblock %}

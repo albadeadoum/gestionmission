@@ -1,0 +1,5 @@
+{{ form_start(form) }}
+{{ form_widget(form) }}
+<button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+<button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+{{ form_end(form) }}

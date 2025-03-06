@@ -1,0 +1,98 @@
+
+{% extends 'base2.html.twig' %}
+{% block body %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page avec deux boutons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        
+
+        @media screen and (max-width: 480px) {
+            .button {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <button class="btn btn-primary" ><a href="{{ path('app_carburant_mobile_new', {'id': app.user.mission.id}) }}"  class="btn btn-primary float-right"><h1><i class="fa-sharp fa-solid fa-plus"></i></h1></a></button>
+        {#<button class="btn btn-info"> <a href="{{ path('app_carburant_mobile_new', {'id': app.user.mission.id}) }}" style="float: right;" class="btn btn-primary"><h1>Etat</h1></a></button>#}
+        {% set nombre = 0 %}
+        {% for carburant in carburants %}
+        {% set nombre = nombre + carburant.Montant %}
+        {% endfor %}
+        {% set nombreTotal = app.user.mission.Montant - nombre %}
+        <h1>ETAT :{{ nombreTotal }} F </h1>
+    </div>
+    
+</body>
+<div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">liste des point de ravitaillement Enregistre</h3>  <a href="#" style="float: right;" class="btn btn-primary">{{app.user.mission}}</a>
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom de la station</th>
+                <th>Quantite</th>
+                <th>Montant</th>
+                 <th>Date</th>
+                {#<th>longitude</th>
+                <th>latitude</th>#}
+                {#<th>Date et Heur</th>#}
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for carburant in carburants %}
+            <tr>
+                <td>{{carburant.nom }}</td>
+                <td>{{ carburant.quantite }} L</td>
+                <td>{{ carburant.Montant }} F CFA</td>
+                {#<td>{{ carburant.longitude }}</td>
+                <td>{{ carburant.latitude }}</td>#}
+                <td>{{ carburant.date ? carburant.date|date('d-m-Y H:i:s') : '' }}</td>
+                <td>
+                    {#<a href="{{ path('app_carburant_show', {'id': carburant.id}) }}">show</a>#}
+                    <a href="{{ path('app_carburant_edit', {'id': carburant.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a> 
+                    {#<a href="{{ path('app_carburant_show', {'id': carburant.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
+                    <a class="btn">{{ include('carburant/_delete_form.html.twig') }}</a>
+                    #}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+{% endblock %}

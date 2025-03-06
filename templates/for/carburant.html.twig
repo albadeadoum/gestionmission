@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carburant index{% endblock %}
+
+{% block body %}
+
+<div class="row align-items-start">
+    <div class="col-6">
+        <!-- Form Element sizes -->
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Carburant</h3>
+            </div>
+            <div class="card-body">
+                <div id="map" style="width: 100%; height: 400px;"></div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+
+       <div class="col-6">
+            <!-- Form Element sizes -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">chauffeurs</h3> {% if is_granted('ROLE_ADMIN') %} {% endif %}
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom de la station</th>
+                <th>Quantite</th>
+                <th>Montant</th>
+                {#<th>longitude</th>
+                <th>latitude</th>#}
+                <th>Date et Heure</th>
+                {#<th>actions</th>#}
+            </tr>
+        </thead>
+        <tbody>
+        {% for carburant in carburants %}
+            <tr>
+                <td>{{ carburant.nom }}</td>
+                <td>{{ carburant.quantite }} L</td>
+                <td>{{ carburant.Montant }} F CFA</td>
+                {#<td>{{ carburant.longitude }}</td>
+                <td>{{ carburant.latitude }}</td>#}
+                <td>{{ carburant.date ? carburant.date|date('d-m-Y H:i:s') : '' }}</td>
+                {#<td>
+                    <a href="{{ path('app_carburant_show', {'id': carburant.id}) }}">show</a>
+                    <a href="{{ path('app_carburant_edit', {'id': carburant.id}) }}">edit</a> 
+                    <a href="{{ path('app_carburant_show', {'id': carburant.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
+                    <a class="btn">{{ include('carburant/_delete_form.html.twig') }}</a>
+                    
+                </td>#}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+              </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+    
+    {#<a href="{{ path('app_carburant_new') }}">Create new</a>#}
+
+     <script>
+    var myMap = L.map('map').setView([17.6078, 8.0817], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(myMap);
+
+    {% for carburant in carburants %}
+      // Ajouter un marqueur pour chaque carburant avec les coordonnées latitude et longitude
+      L.marker([{{ carburant.latitude }}, {{ carburant.longitude }}]).addTo(myMap).bindPopup("{{ carburant.mission.Vehicule }}- {{ carburant.nom }}");
+    {% endfor %}
+  </script>
+{% endblock %}

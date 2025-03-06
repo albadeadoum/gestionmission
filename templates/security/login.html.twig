@@ -1,0 +1,94 @@
+{% block stylesheets %}
+       
+            <!-- Google Font: Source Sans Pro -->
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+            <!-- Font Awesome -->
+           
+            <link rel="stylesheet" href="{{asset('assets/plugins/fontawesome-free-6.3.0-web/css/all.min.css')}}"
+            <!-- Theme style -->
+            <link rel="stylesheet" href="{{asset('assets/dist/css/adminlte.min.css')}}">
+            <!-- overlayScrollbars -->
+            <link rel="stylesheet" href="{{asset('assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
+            
+            <style>
+                body {
+                    background-image: url('{{ asset('') }}');
+                    background-color: transparent;
+                    background-size: 100% auto;  /*Adjust the percentage as needed */
+                    background-repeat: no-repeat;
+                   /* background-position: center center;*/
+                }
+                img {
+                    opacity : 0.5;
+                }
+            </style>
+           
+{% endblock %}
+
+{% block body %}
+<body class="hold-transition login-page">
+<div class="login-box">
+ <div class="card card-outline card-primary">
+ <div class="card-header text-center">
+      <a class="h1"><b>Parc Auto</b> </a>
+    </div>
+    <div class="card-header text-center">
+      <a class="h1"> INS/NIGER</a>
+    </div>
+    <div class="card-body">
+      <p class="login-box-msg">Connectez-vous pour démarrer votre session</p>
+        <form method="post">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="mb-3">
+                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            <h1 class="h3 mb-3 font-weight-normal">Veuillez vous connecter</h1>
+            <label for="inputEmail">Email</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+            <label for="inputPassword">Password</label>
+            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+
+            <input type="hidden" name="_csrf_token"
+                value="{{ csrf_token('authenticate') }}"
+            >
+
+            {#
+                Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+                See https://symfony.com/doc/current/security/remember_me.html
+
+                <div class="checkbox mb-3">
+                    <label>
+                        <input type="checkbox" name="_remember_me"> Remember me
+                    </label>
+                </div>
+            #}
+
+            <div class="container">
+            <button class="btn btn-lg btn-primary" type="submit" >
+                Se connecter
+            </button>
+            </div>
+            <style>
+            .btn {
+                margin: 10px;
+            }
+            .container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    
+                }
+            </style>
+        </form>
+  </div>
+    </div>
+    </div>
+      </body>
+  <!-- /.card -->
+{% endblock %}
