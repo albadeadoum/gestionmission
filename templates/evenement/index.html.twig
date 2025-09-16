@@ -6,14 +6,14 @@
    <div class="row align-items-start">
        <div class="col">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Mission</h3> {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
                 
               </div>
               <div class="card-body">
 
-    <table class="table table-striped"  id="example1" >
+    <table class="table table-striped table-bordered text-center"  id="example1" >
         <thead>
             <tr>
                 <th>Objet</th>
@@ -21,6 +21,7 @@
                 <th>Chauffeur</th>
                 <th>Début</th>
                 <th>Fin</th>
+                <th>Bailleur</th>
                 <th>Description</th>
                 <th>Destination</th>
                 <th>Dotation</th>
@@ -41,6 +42,7 @@
                 <td>{{ evenement.Chauffeur }}</td>
                 <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
                 <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
+                <td>{{ evenement.bailleur }}</td>
                 <td>{{ evenement.description }}</td>
                 <td>{{ evenement.Destination }}</td>
                 <td>{{ evenement.Dotation }}</td>
@@ -52,7 +54,9 @@
                 <td>
                     
                     {#<a href="{{ path('app_for_carburant_evenement', {'id': evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-gas-pump"></i></a>#}
-                    <a href="" class="btn btn-secondary"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>
+                    <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-info "><i class="fa-solid fa-eye fa-xl" style="color: #FFFFF;"></i></a>
+                    <a href="{{ path('app_for_mission', {'id':  evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>
+                    {#<a href="" class="btn btn-info"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>#}
                     <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
                     <a class="btn">{{ include('evenement/_delete_form.html.twig') }}</a>
                    
@@ -85,7 +89,7 @@
                 {{ form_start(form) }}
                     <div class="form-group">
                         {{ form_label(form.Vehicule, 'Véhicule libre') }}
-                        {{ form_widget(form.Vehicule, { 'attr': { 'class': 'form-control' } }) }}
+                        {{ form_widget(form.Vehicule, { 'attr': { 'class': 'form-control ' } }) }}
                         {% if form.Vehicule.vars.errors|length > 0 %}
                             <span style="color: red;">{{ form_errors(form.Vehicule) }}</span>
                         {% endif %}
@@ -98,6 +102,8 @@
                             <span style="color: red;">{{ form_errors(form.Chauffeur) }}</span>
                         {% endif %}
                     </div>
+
+                    
 
                     {# Autres champs du formulaire #}
                     {{ form_widget(form) }}
@@ -121,6 +127,30 @@
             contactModal.show();
         {% endif %}
     });
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const debut = document.getElementById('{{ form.debut.vars.id }}');
+        const fin = document.getElementById('{{ form.fin.vars.id }}');
+
+        debut.addEventListener('change', function() {
+            if (debut.value) {
+                // impose que la fin soit STRICTEMENT > début
+                let minDate = new Date(debut.value);
+                minDate.setDate(minDate.getDate() + 1);
+                fin.min = minDate.toISOString().split("T")[0];
+            }
+        });
+    });
+    
+//select2
+    document.addEventListener("DOMContentLoaded", function() {
+    $('.select2').select2({
+        width: '100%',
+        placeholder: "Rechercher un véhicule",
+        allowClear: true
+    });
+});
+
 </script>
 
 

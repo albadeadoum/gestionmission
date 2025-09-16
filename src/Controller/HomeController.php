@@ -6,6 +6,7 @@ use App\Repository\AssuranceRepository;
 use App\Repository\ChauffeurRepository;
 use App\Repository\EvenementRepository;
 use App\Repository\MotoRepository;
+use App\Repository\PieceRepository;
 use App\Repository\VehiculeRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +18,8 @@ class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
     public function index( EvenementRepository $event, VehiculeRepository $vehiculeRepository,
-     EvenementRepository $evenementRepository, ChauffeurRepository $chauffeurRepository, MotoRepository $motoRepository, AssuranceRepository $assuranceRepository): Response
+     EvenementRepository $evenementRepository, ChauffeurRepository $chauffeurRepository, MotoRepository $motoRepository, 
+     AssuranceRepository $assuranceRepository, PieceRepository $pieceRepository,): Response
     {
         $evenement = $event -> findAll();
         $v = 1;
@@ -50,6 +52,7 @@ class HomeController extends AbstractController
             'chauffeurs' => $chauffeurRepository->findAll(),
             'motos' => $motoRepository->findAll(),
             'assurances' => $assuranceRepository->findBy([], ['fin' => 'DESC']),
+            'pieces' => $pieceRepository->findAll(),
         ] );
         
     }

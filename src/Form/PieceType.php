@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Evenement;
 use App\Entity\Piece;
 use App\Entity\Vehicule;
 use Doctrine\DBAL\Types\DateType;
@@ -24,6 +25,16 @@ class PieceType extends AbstractType
         $builder
             ->add('Vehicule' , EntityType::class, ['class' => Vehicule::class,
             'placeholder' => 'Choisissez le véhicule',
+            'label' => 'VEHICULE *',
+            'attr' => [
+                'class' => 'form-control',
+                'data-live-search' => 'true',
+                ],
+            ])
+            ->add('event' , EntityType::class, ['class' => Evenement::class,
+            'placeholder' => 'Choisissez la mission',
+            'label' => 'Mission',
+            'required' => false, // Permet de ne pas forcer la sélection
             'attr' => [
                 'class' => 'form-control',
                 'data-live-search' => 'true',
@@ -51,34 +62,50 @@ class PieceType extends AbstractType
                     'data-provide' => 'datetimepicker',
                     'html5' => false,
                 ],
-                'label' => 'date fin'
+                'label' => 'Date survenu'
                 ))
             ->add('Quantitite' , IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control',
                 ],
-                'label' => 'Quantitite',
+                'label' => 'Quantitite (unité)',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
+                'data' => 0, // valeur par défaut
                 'constraints' => [
-                    new Assert\Positive(),
-                    
+                    new Assert\PositiveOrZero(), // accepte zéro et positif
                 ]
             ])
             ->add('cout' , IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control',
                 ],
-                'label' => 'coût',
+                'label' => 'coût FCFA',
+                'label_attr' => [
+                    'class' => 'form-label mt-4'
+                ],
+                'data' => 0, // valeur par défaut
+                'constraints' => [
+                    new Assert\PositiveOrZero(), // accepte zéro et positif
+                ]
+            ])
+
+            ->add('garage', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '500'
+                ],
+                'label' => 'Lieu de reparation',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Positive(),
-                    
+                    new Assert\Length(['min' => 2, 'max' => 255]),
                 ]
             ])
+
             ->add('Observation' , TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',
@@ -89,8 +116,7 @@ class PieceType extends AbstractType
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 1000]),
-                    new Assert\NotBlank()
+                    new Assert\Length(['min' => 0, 'max' => 1000]),
                 ]
             ])
             

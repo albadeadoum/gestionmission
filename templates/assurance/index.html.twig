@@ -6,7 +6,7 @@
     <div class="row align-items-start">
        <div class="col">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Assurance</h3> {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#addAssuranceModal" aria-label="Ajouter une assurance"style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a>  {% endif %}
                 
@@ -14,7 +14,7 @@
               <div class="card-body">
 
 
-    <table  class="table table-striped"  id="example1" >
+    <table  class="table table-striped table-bordered text-center"  id="example1" >
         <thead>
             <tr>
                 <th>Type</th>
@@ -22,6 +22,7 @@
                 <th>Numéro</th>
                 <th>Début</th>
                 <th>Fin</th>
+                <th>J. Restant</th>
                 <th></th>
             </tr>
         </thead>
@@ -30,10 +31,11 @@
         {% set today = 'now'|date('Y-m-d') %}
         {% set warning_threshold = 'now +15 days'|date('Y-m-d') %}
         
-
+        
         {# Tri des assurances par date de fin, en plaçant les dates null à la fin #}
         {% for assurance in assurances|sort((a, b) => (a.fin ?? '9999-12-31') <=> (b.fin ?? '9999-12-31')) %}
             {% set date_fin = assurance.fin ? assurance.fin|date('Y-m-d') : '' %}
+            {% set jours_restants = assurance.fin ? date(assurance.fin).diff(date(today)).days : null %}
             <tr 
                 {% if date_fin and date_fin < today %} style="background-color:rgb(220, 29, 29); color: white;" {% endif %}
                 {% if date_fin and date_fin >= today and date_fin <= warning_threshold %} style="background-color:rgb(166, 130, 139);" {% endif %}
@@ -68,6 +70,19 @@
                     {% endif %}
                     
                 </td>
+
+                <td>
+                {% if jours_restants is not null %}
+                    {% if date(assurance.fin) < date(today) %}
+                        Expirée depuis {{ jours_restants }} jours
+                    {% else %}
+                        {{ jours_restants }} jours restants
+                    {% endif %}
+                {% else %}
+                    -
+                {% endif %}
+                </td>
+
                 <td>
                     {#<a href="{{ path('app_assurance_show', {'id': assurance.id}) }}">show</a>#}
                     <a href="#" class="btn btn-warning edit-btn" data-id="{{ assurance.id }}">
@@ -256,7 +271,19 @@
                 document.getElementById('moto-field-edit').style.display = type === 'moto' ? 'block' : 'none';
             }
         });
+         document.addEventListener("DOMContentLoaded", function() {
+        const debut = document.getElementById('{{ form.debut.vars.id }}');
+        const fin = document.getElementById('{{ form.fin.vars.id }}');
 
+        debut.addEventListener('change', function() {
+            if (debut.value) {
+                // impose que la fin soit STRICTEMENT > début
+                let minDate = new Date(debut.value);
+                minDate.setDate(minDate.getDate() + 1);
+                fin.min = minDate.toISOString().split("T")[0];
+            }
+        });
+    });
 
 
 

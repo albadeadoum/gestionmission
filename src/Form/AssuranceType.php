@@ -27,7 +27,7 @@ class AssuranceType extends AbstractType
                     'minlength' => '2',
                     'maxlength' => '500'
                 ],
-                'label' => 'Nom de la station',
+                'label' => 'Numero Assurance',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],

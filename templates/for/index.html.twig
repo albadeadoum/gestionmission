@@ -1,37 +1,85 @@
+
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Piece index{% endblock %}
+{% block title %}Liste des Entretiens{% endblock %}
 
 {% block body %}
-
 <div class="row align-items-start">
-        <div class="col">
-                <!-- Form Element sizes -->
-                <div class="card card-info">
-                <div class="card-header">
-                    <h2 class="card-title"> {% for piece1 in pieces %} {% if loop.first %}{{ piece1.Vehicule }}{% endif %}{% endfor %}    Liste des Entretiens</h2> <a href="{{ path('app_piece_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>
+    <div class="col">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">{% for piece1 in pieces %} {% if loop.first %}{{ piece1.Vehicule }}{% endif %}{% endfor %}    Liste des Entretiens</h2>
+                {% if is_granted('ROLE_ADMIN') %}
+                    {#
+                    <a href="{{ path('app_piece_new') }}" style="float: right;" class="btn btn-primary"> 
+                        <i class="fa-sharp fa-solid fa-plus"></i>
+                    </a>
+                    
+
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPieceModal">
+                        <i class="fa-solid fa-plus"></i> Ajouter
+                    </button>#}
+
+                    <a   data-bs-toggle="modal" data-bs-target="#addPieceModal" style="float: right;" class="btn btn-primary"> 
+                        <i class="fa-sharp fa-solid fa-plus"></i>
+                    </a>
+                    
+                {% endif %}
+            </div>
+               <div class="card-body">
+                
+                {% set currentYear = "now"|date("Y") %}
+                {% set totalCost = 0 %}
+                {% set totalCostAnnée = 0 %}
+                {% set entretienCount = 0 %}
+                {% set entretien = 0 %}
+                {% for piece in pieces %}
+                    {% set totalCost = totalCost + piece.cout %}
+                    {% set entretien = entretien + 1 %}
+                {% endfor %}
+                {% for piece in pieces %}
+                    {% if piece.Date and piece.Date|date("Y") == currentYear %}
+                        {% set totalCostAnnée = totalCostAnnée + piece.cout %}
+                        {% set entretienCount = entretienCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="alert alert-info">
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                    <strong>Coût Total des Entretiens :</strong> {{ totalCost }} F CFA<br>
+                    
                 </div>
-                <div class="card-body">
+                {#<div class="alert alert-info">
+                    <strong>Année :</strong> {{ currentYear }} <br>
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                    <strong>Coût Total :</strong> {{ totalCost }} F CFA
+                </div>#}
+
+
                       <table id="example2" class="table table-striped">
         <thead>
             <tr>
-                {#<th>Véhicule</th>#}
                 <th>Date</th>
+               
+                <th>Mission</th>
+                <th>Marque</th>
                 <th>Description</th>
-                <th>Quantitite</th>
+                <th>Quantité</th>
                 <th>Coût</th>
-                <th>Observation</th>
-                <th></th>
+                <th>Observation</th>                
             </tr>
         </thead>
         <tbody>
         {% for piece in pieces %}
             <tr>
-                {#<td> {{ piece.Vehicule }}</td>#}
                 <td>{{ piece.Date ? piece.Date|date('d-m-Y') : '' }}</td>
+               
+                <td>{{ piece.event }}</td>
+                <td>{{ piece.Vehicule.Marque }}</td>
                 <td>{{ piece.Nom }}</td>
                 <td>{{ piece.Quantitite }}</td>
-                 <td>{{ piece.cout  }} F CFA</td>
+                <td>{{ piece.cout }} F CFA</td>
                 <td>{{ piece.Observation }}</td>
                 <td>
                     {% if is_granted('ROLE_ADMIN') %}
@@ -52,5 +100,4 @@
             </div>
         </div>
    
-
 {% endblock %}

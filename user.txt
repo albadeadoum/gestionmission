@@ -1,0 +1,5 @@
+php bin/console doctrine:query:sql "INSERT INTO "user" (email, roles, password, nom, prenom, status, create_date)VALUES ('admin@gmail.com','["ROLE_USER"]','$2y$13$3lSNPrko5gOe8iO9gxVP0uhx.jVDLDUENlcGS8v8XZCn/UGt9UDWq','Admin','Admin','Actif',CURRENT_DATE());"
+
+$2y$13$vQxiEDG3OZmFBrB5lGHlkOr1YDPLLD7j.5lWVU3HmEvL985kOxWlW
+
+php bin/console doctrine:query:sql "INSERT INTO \"user\" (email, roles, password, nom, prenom, status, create_date) VALUES ('albade@gmail.com','[\"ROLE_ADMIN\",\"ROLE_USER\"]','$2y$13$vQxiEDG3OZmFBrB5lGHlkOr1YDPLLD7j.5lWVU3HmEvL985kOxWlW','Albade','Albade','Actif',CURRENT_DATE());"

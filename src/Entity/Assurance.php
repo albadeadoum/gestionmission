@@ -101,5 +101,14 @@ class Assurance
 
         return $this;
     }
+
+    public function __toString()
+    {
+
+        $retoure =$this->numero. '- fin: '.  $this->fin->format('d/m/Y')    ;
+        return $retoure;  
+    }
+
+    
 }
 

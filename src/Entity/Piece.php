@@ -32,6 +32,12 @@ class Piece
     #[ORM\Column(nullable: true)]
     private ?float $cout = null;
 
+    #[ORM\ManyToOne(inversedBy: 'pieces')]
+    private ?Evenement $event = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $garage = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +111,30 @@ class Piece
     public function setCout(?float $cout): static
     {
         $this->cout = $cout;
+
+        return $this;
+    }
+
+    public function getEvent(): ?Evenement
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Evenement $event): static
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    public function getGarage(): ?string
+    {
+        return $this->garage;
+    }
+
+    public function setGarage(?string $garage): static
+    {
+        $this->garage = $garage;
 
         return $this;
     }

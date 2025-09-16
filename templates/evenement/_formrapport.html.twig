@@ -1,0 +1,14 @@
+{{ form_start(form, {
+    'attr': {'id': 'editEvenementRapportForm'},
+    'action': path('app_event_rapport_edit', {'id': evenement.id}),
+    'method': 'POST'
+}) }}
+    
+    {{ form_widget(form) }}
+    
+    <button type="submit" class="btn btn-success mt-3">
+                            <i class="fas fa-save"></i> enregistre
+                        </button>
+{{ form_end(form) }}
+
+

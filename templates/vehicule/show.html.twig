@@ -30,6 +30,10 @@
                                 <td>{{ vehicule.NBChassis }}</td>
                             </tr>
                             <tr>
+                                <th>Structure d'Affectation</th>
+                                <td>{{ vehicule.direction }}</td>
+                            </tr>
+                            <tr>
                                 <th>Numero Moteur</th>
                                 <td>{{ vehicule.NBMoteur }}</td>
                             </tr>
@@ -44,6 +48,33 @@
                             <tr>
                                 <th>au vidange</th>
                                 <td>{{ vehicule.Compteur }} km</td>
+                            </tr>
+                            <tr>
+                                <th>assurance</th>
+                                <td>{% set assurances_en_cours = vehicule.assurances|filter(a => a.fin > "now"|date) %}
+                                    {% set assurances_expirees = vehicule.assurances|filter(a => a.fin <= "now"|date) %}
+
+                                    {# Affichage des assurances en cours #}
+                                    {% if assurances_en_cours is not empty %}
+                                        {% for assurance in assurances_en_cours|sort((a, b) => a.fin <=> b.fin) %}
+                                            <span>{{ assurance.numero }} - Fin : {{ assurance.fin|date('d/m/Y') }}</span> <br>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {# Affichage des assurances expirées en rouge #}
+                                    {% if assurances_expirees is not empty %}
+                                        {% for assurance in assurances_expirees|sort((a, b) => a.fin <=> b.fin) %}
+                                            <span style="color: red; font-weight: bold;">
+                                                {{ assurance.numero }} - Fin : {{ assurance.fin|date('d/m/Y') }} (Expirée)
+                                            </span> <br>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {# Si aucune assurance n'a jamais été enregistrée #}
+                                    {% if vehicule.assurances is empty %}
+                                        <span style="color: red; font-weight: bold;">Aucune assurance enregistrée</span>
+                                    {% endif %}
+                                    </td>
                             </tr>
                             <tr>
                                 <th> A vidange</th>
@@ -65,3 +96,6 @@
     </div>
     
 {% endblock %}
+
+
+  

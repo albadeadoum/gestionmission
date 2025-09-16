@@ -5,9 +5,40 @@
 {% block body %}
 
 <div class="row align-items-start">
+
+                {% set currentYear = "now"|date("Y") %}
+                {% set totalvehicule = 0 %}
+                {% set totalmoto = 0 %}
+                {% set totalmission = 0 %}
+                {% set entretienCount = 0 %}
+                {% set entretien = 0 %}
+                {% for piece in pieces %}
+                    {% set entretien = entretien + 1 %}
+                {% endfor %}
+                {% for evenement in evenements %}
+                    
+                        {% set totalmission = totalmission + 1 %}
+                    
+                {% endfor %}
+                {% for vehicule in vehicules %}
+                    
+                        {% set totalvehicule = totalvehicule + 1 %}
+                    
+                {% endfor %}
+                {% for moto in motos %}
+                        {% set totalmoto = totalmoto + 1 %}
+                {% endfor %}
+         <div class="alert alert-info">
+        <strong>Total mission  :</strong>{{ totalmission }}   <strong style="margin-left: 200px;">Total vehicule :</strong>{{ totalvehicule }} <br>
+        <strong>Total des Entretiens :</strong>{{ entretien }}  <strong style="margin-left: 170px;">Total moto :</strong>{{ totalmoto }} <br>
+                    
+                
+        </div>
+        </div>
+<div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Calendrier des Missions</h3> <a href="{{ path('app_evenement_index') }}" style="float: right;" class="btn btn-primary"><i class="fa-solid fa-calendar-days"></i></a>
               </div>
@@ -21,14 +52,14 @@
 
      <div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
               
                 <h3 class="card-title">Liste des missions</h3>
                 
               </div>
               <div class="card-body">
-                  <table class="table table-striped"  id="example3">
+                  <table class="table table-striped table-bordered text-center"  id="example3">
                             <thead>
                                 <tr>
                                     <th>Objet</th>
@@ -63,12 +94,12 @@
    <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Liste des Vehicules</h3>
+                <h3 class="card-title">Vehicules</h3>
               </div>
               <div class="card-body">
-              <table id="example1" class="table table-striped">
+              <table id="example1"  class="table table-striped table-bordered text-center">
                         <thead>
                             <tr>
                                 
@@ -97,10 +128,10 @@
                                     {% endfor %}
                                     
                                     {% if vehiculeLibre == false %}
-                                    <a class="btn btn-danger">Véhicule non libre</a>
+                                    <a class="btn btn-danger">Indisponible</a>
                                     {% endif %}
                                     {% if vehiculeLibre == true %}
-                                    <a class="btn btn-success">Véhicule libre</a>
+                                    <a class="btn btn-success">Disponible</a>
                                     {% endif %}
                                 </td>
                                {# <td>
@@ -124,16 +155,18 @@
               <!-- /.card-body -->
          </div>
     </div>
+
+    {#
     <div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
               
                 <h3 class="card-title">Chauffeur</h3>
                 
               </div>
               <div class="card-body">
-                  <table id="example4" class="table table-striped">
+                  <table id="example4" class="table table-striped table-bordered text-center">
         <thead>
             <tr>
                 
@@ -159,19 +192,19 @@
                             {% endif %}
                             {% endfor %}
                             {% if chauffeurLibre == false %}
-                            <a class="btn btn-danger">Chauffeur non libre</a>
+                            <a class="btn btn-danger">Indisponible</a>
                             {% endif %}
                             {% if chauffeurLibre == true %}
-                            <a class="btn btn-success">Chauffeur libre</a>
+                            <a class="btn btn-success">Disponible</a>
                             {% endif %}
                 </td>
-                {#<td>
+                <td>
                 {% for evenement in chauffeur.evenements %}
                     {% if evenement.debut.format("Y-m-d") > currentDate %}
                        <a class="btn btn-warning">{{ chauffeur.getEvenements[0].titre }} -  {{ chauffeur.getEvenements[0].debut.format('Y-m-d')}}</a>
                     {% endif %}
                     {% endfor %}
-                </td>#}
+                </td>
                 
                 
             </tr>
@@ -182,22 +215,22 @@
         {% endfor %}
         </tbody>
     </table>
-     </div>
+     </div>#}
               <!-- /.card-body -->
  </div>
  </div>
  </div>
 
- 
+ {##}
  <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Assurances</h3> 
               </div>
               <div class="card-body">
-                  <table  class="table table-striped"  id="example1" >
+                  <table  class="table table-striped table-bordered text-center"  id="example1" >
         <thead>
             <tr>
                 <th>Type</th>
@@ -265,22 +298,23 @@
          </div>
     </div>
 
-     <div class="col-6">
+     {#<div class="col-6">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
               
                 <h3 class="card-title">Liste des affectations moto</h3>
                 
               </div>
               <div class="card-body">
-                 <table id="example4" class="table table-striped">
+                 <table id="example4" class="table table-striped table-bordered text-center">
         <thead>
             <tr>
-                {#<th>Id</th>#}
+                <th>Id</th>
                 <th>Immatriculation</th>
                 <th>Marque</th>
                 <th>Etat</th>
+                <th>Date Affectation</th>
                 <th>Utilisateur</th>
                
             </tr>
@@ -288,10 +322,11 @@
         <tbody>
         {% for moto in motos %}
             <tr>
-                {#<td>{{ moto.id }}</td>#}
+                <td>{{ moto.id }}</td>
                 <td>{{ moto.immatriculation }}</td>
                 <td>{{ moto.marque }}</td>
                 <td>{{ moto.etat }}</td>
+                <td></td>
                 <td>{{ moto.utilisateur }}</td>
                 
             </tr>
@@ -306,7 +341,7 @@
               <!-- /.card-body -->
             </div>
      </div>
- </div>
+ </div>#}
  
    
 

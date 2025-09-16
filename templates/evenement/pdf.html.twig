@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+    .title { text-align:center; font-weight: bold; margin: 20px 0; text-decoration: underline; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    td, th { padding: 6px; vertical-align: top; }
+    .label { width: 35%; font-weight: bold; }
+    .signature { margin-top: 40px; text-align: right; }
+  </style>
+</head>
+<body>
+  <h2 class="title">ORDRE DE DÉPLACEMENT</h2>
+
+  <table>
+    <tr><td class="label">Objet</td><td>{{ objet }}</td></tr>
+    <tr><td class="label">Date début</td><td>{{ debut }}</td></tr>
+    <tr><td class="label">Date fin</td><td>{{ fin }}</td></tr>
+    <tr><td class="label">Description</td><td>{{ description }}</td></tr>
+    <tr><td class="label">Chauffeur</td><td>{{ chauffeur }}</td></tr>
+    <tr><td class="label">Destination</td><td>{{ destination }}</td></tr>
+  </table>
+
+  <h4>Membres de la mission</h4>
+  <table border="1">
+    <thead>
+      <tr><th>Nom</th><th>Prénom</th><th>Service</th><th>Lieu d'emploi</th></tr>
+    </thead>
+    <tbody>
+      {% for agent in agents %}
+        <tr>
+          <td>{{ agent.nom }}</td>
+          <td>{{ agent.prenom }}</td>
+          <td>{{ agent.service }}</td>
+          <td>{{ agent.lienEmpl }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Aucun membre assigné</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="signature">
+    Fait à Niamey, le {{ date_today }}<br><br>
+    <strong>Le Directeur Général p.i</strong><br><br><br>
+    <strong>Souleymane ALZOUMA</strong>
+  </div>
+</body>
+</html>

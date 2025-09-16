@@ -48,29 +48,34 @@ class VehiculeType extends AbstractType
                    
                 ]
             ])
-            ->add('NBChassis' , IntegerType::class, [
+            ->add('NBChassis' , TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '500'
                 ],
-                'label' => 'Numero Chassis',
+                'label' => 'Numero de Chassis',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Positive(),
+                    new Assert\Length(['min' => 0, 'max' => 255]),
+                   
                 ]
             ])
-            ->add('NBMoteur' , IntegerType::class, [
+            ->add('NBMoteur' , TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
+                    
+                    'maxlength' => '500'
                 ],
-                'label' => 'Numero Moteur',
+                'label' => 'Numero de moteur',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Positive(),
-                    
+                    new Assert\Length(['min' => 0, 'max' => 255]),
+                   
                 ]
             ])
             ->add('Puissace', IntegerType::class, [
@@ -81,9 +86,9 @@ class VehiculeType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
+                'data' => 0, // valeur par défaut
                 'constraints' => [
-                    new Assert\Positive(),
-                    new Assert\NotBlank()
+                    new Assert\PositiveOrZero(), // accepte zéro et positif
                 ]
             ])
             ->add('Etat', ChoiceType::class, [
@@ -98,6 +103,7 @@ class VehiculeType extends AbstractType
                 ],
                 'choices' => [
                     'Bon' => 'Bon',
+                    'Passable' => 'Passable',
                     'Mauvais' => 'Mauvais',
                 ],
             ])
@@ -110,9 +116,9 @@ class VehiculeType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
+                'data' => 0, // valeur par défaut
                 'constraints' => [
-                    new Assert\Positive(),
-                    
+                    new Assert\PositiveOrZero(), // accepte zéro et positif
                 ]
             ])
             ->add('pneus' , IntegerType::class, [
@@ -123,9 +129,9 @@ class VehiculeType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],
+                'data' => 0, // valeur par défaut
                 'constraints' => [
-                    new Assert\Positive(),
-                    
+                    new Assert\PositiveOrZero(), // accepte zéro et positif
                 ]
             ])
             ->add('imageFile', FileType::class, [

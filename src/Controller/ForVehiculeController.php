@@ -49,6 +49,16 @@ class ForVehiculeController extends AbstractController
             'carburants'=> $carburant,
         ]);
     }
+    #[Route('/for/mission/evement/{id}', name: 'app_for_mission')]
+    public function indexformission(PieceRepository $repository , int $id, EntityManagerInterface $entityManager): Response
+    {
+        $em = $entityManager;
+
+        $piece = $repository->findBy(['event' => $id]);
+        return $this->render('for/piece.html.twig', [
+            'pieces'=> $piece,
+        ]);
+    }
     /*#[Route('/for/vehicule', name: 'app_for_vehicule')]
     public function index(): Response
     {

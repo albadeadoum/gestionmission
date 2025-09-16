@@ -6,14 +6,14 @@
     <div class="row align-items-start">
        <div class="col">
             <!-- Form Element sizes -->
-            <div class="card card-success">
+            <div class="card card-secondary">
               <div class="card-header">
                 <h3 class="card-title">Liste des Motos</h3> {% if is_granted('ROLE_ADMIN') %} <a  style="float: right;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMotoModal"><i class="fa-sharp fa-solid fa-plus"></i></a>
                 {#<a href="{{ path('app_moto_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>#}{% endif %}
               </div>
               <div class="card-body">
 
-    <table id="example1" class="table table-striped">
+    <table id="example1" class="table table-striped table-bordered text-center">
         <thead>
             <tr>
                 {#<th>Id</th>#}
@@ -21,6 +21,9 @@
                 <th>Marque</th>
                 <th>Etat</th>
                 <th>Utilisateur</th>
+                <th>Date Affectation</th>
+                <th>Date Affectation</th>
+                <th>assurances</th>
                 <th></th>
             </tr>
         </thead>
@@ -32,6 +35,27 @@
                 <td>{{ moto.marque }}</td>
                 <td>{{ moto.etat }}</td>
                 <td>{{ moto.utilisateur }}</td>
+                <td></td>
+                <td></td>
+                <td>
+                    {% set assurances_en_cours = moto.assurances|filter(a => a.fin > "now"|date)|sort((a, b) => a.fin <=> b.fin) %}
+                    {% set assurances_expirees = moto.assurances|filter(a => a.fin <= "now"|date)|sort((a, b) => b.fin <=> a.fin) %}
+
+                    {% if assurances_en_cours is not empty %}
+                        {# Affiche la prochaine assurance qui expire #}
+                        {% set assurance = assurances_en_cours|first %}
+                        <span>{{ assurance.numero }} - Fin : {{ assurance.fin|date('d/m/Y') }}</span>
+                    {% elseif assurances_expirees is not empty %}
+                        {# Si aucune assurance en cours, affiche la dernière expirée #}
+                        {% set assurance = assurances_expirees|first %}
+                        <span style="color: red; font-weight: bold;">
+                            {{ assurance.numero }} - Fin : {{ assurance.fin|date('d/m/Y') }} (Expirée)
+                        </span>
+                    {% else %}
+                        {# Si aucune assurance n'existe #}
+                        <span style="color: red; font-weight: bold;">Aucune assurance enregistrée</span>
+                    {% endif %}
+                </td>
                 <td>
                     {#<a href="{{ path('app_moto_show', {'id': moto.id}) }}">show</a>#}
                     

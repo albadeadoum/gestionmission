@@ -29,7 +29,7 @@ class EvenementType extends AbstractType
             ->add('Vehicule', EntityType::class, ['class' => Vehicule::class,
             'placeholder' => 'Choisissez un Vehicule',
             'attr' => [
-                'class' => 'form-control',
+                'class' => 'form-control select2',
                 'data-live-search' => 'true',
                 ],
                 'label' => 'Vehicule libre',
@@ -125,6 +125,18 @@ class EvenementType extends AbstractType
                         new Assert\Length(['min' => 0, 'max' => 500]),
                     ]
                 ])
+
+                ->add('Bailleur', EntityType::class, ['class' => Bailleurs::class,
+                'placeholder' => 'Choisissez un Vehicule',
+                'attr' => [
+                    'class' => 'form-control select2',
+                    'data-live-search' => 'true',
+                    ],
+                    'label' => 'Vehicule libre',
+                    
+                ])
+
+                
             ->add('Dotation', ChoiceType::class, [
                 'placeholder' => 'Choisissez un statut',
                 'attr' => [

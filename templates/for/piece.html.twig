@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Piece index{% endblock %}
+
+{% block body %}
+
+<div class="row align-items-start">
+        <div class="col">
+                <!-- Form Element sizes -->
+                <div class="card card-secondary">
+                <div class="card-header">
+                    <h2 class="card-title"> {% for piece1 in pieces %} {% if loop.first %}{{ piece1.event }}{% endif %}{% endfor %}    Liste des Entretiens au cours </h2> 
+                </div>
+                <div class="card-body">
+                
+                {% set currentYear = "now"|date("Y") %}
+                {% set totalCost = 0 %}
+                {% set totalCostAnnée = 0 %}
+                {% set entretienCount = 0 %}
+                {% set entretien = 0 %}
+                {% for piece in pieces %}
+                    {% set totalCost = totalCost + piece.cout %}
+                    {% set entretien = entretien + 1 %}
+                {% endfor %}
+                {% for piece in pieces %}
+                    {% if piece.Date and piece.Date|date("Y") == currentYear %}
+                        {% set totalCostAnnée = totalCostAnnée + piece.cout %}
+                        {% set entretienCount = entretienCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="alert alert-info">
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                    <strong>Coût Total des Entretiens :</strong> {{ totalCost }} F CFA<br>
+                    
+                </div>
+                {#<div class="alert alert-info">
+                    <strong>Année :</strong> {{ currentYear }} <br>
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                    <strong>Coût Total :</strong> {{ totalCost }} F CFA
+                </div>#}
+
+
+                      <table id="example2" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Véhicule</th>
+                <th>Mission</th>
+                <th>Marque</th>
+                <th>Description</th>
+                <th>Quantité</th>
+                <th>Coût</th>
+                <th>Observation</th>                
+            </tr>
+        </thead>
+        <tbody>
+        {% for piece in pieces %}
+            <tr>
+                <td>{{ piece.Date ? piece.Date|date('d-m-Y') : '' }}</td>
+                <td>{{ piece.Vehicule }}</td>
+                <td>{{ piece.event }}</td>
+                <td>{{ piece.Vehicule.Marque }}</td>
+                <td>{{ piece.Nom }}</td>
+                <td>{{ piece.Quantitite }}</td>
+                <td>{{ piece.cout }} F CFA</td>
+                <td>{{ piece.Observation }}</td>
+                <td>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_piece_edit', {'id': piece.id}) }}" class="btn btn-info"><i class="fa-solid fa-pen-to-square" ></i></a>
+                    <a class="btn">{{ include('piece/_delete_form.html.twig') }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+   
+
+{% endblock %}

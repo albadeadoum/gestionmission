@@ -6,6 +6,7 @@ namespace App\Form;
 use App\Entity\Evenement;
 use App\Entity\Vehicule;
 use App\Entity\Chauffeur;
+use App\Entity\Bailleur;
 use App\Validator\ChauffeurDisponibilite;
 use App\Validator\VehiculeDisponibilite;
 use Doctrine\ORM\EntityRepository;
@@ -18,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType as TypeDateType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 
 class EvenementTypeReserver extends AbstractType
@@ -32,6 +34,7 @@ class EvenementTypeReserver extends AbstractType
                 'data-live-search' => 'true',
                 ],
                 'label' => 'Vehicule libre',
+                'required' => false, // <-- le champ n'est plus obligatoire
                 'constraints' => [
                     new VehiculeDisponibilite(),
                 ],
@@ -43,6 +46,7 @@ class EvenementTypeReserver extends AbstractType
                 'data-live-search' => 'true',
                 'label' => 'Chauffeur libre',
                 ],
+                'required' => false, // <-- le champ n'est plus obligatoire
                 'constraints' => [
                     new ChauffeurDisponibilite(),
                 ],
@@ -82,6 +86,32 @@ class EvenementTypeReserver extends AbstractType
                 ],
                 'label' => 'Date fin'
                 ))
+                ->add('Destination', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '500'
+                ],
+                'label' => 'Destination',
+                'label_attr' => [
+                    'class' => 'form-label mt-4'
+                ],
+                'constraints' => [
+                    new Assert\Length(['min' => 2, 'max' => 255]),
+                    new Assert\NotBlank()
+                ]
+            ])
+
+            ->add('Bailleur', EntityType::class, ['class' => Bailleur::class,
+            'placeholder' => 'Choisissez un Bailleur ',
+            'attr' => [
+                'class' => 'form-control',
+                'data-live-search' => 'true',
+                ],
+                'label' => 'Bailleur de financement',
+                
+            ])
+            
             ->add('description', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',

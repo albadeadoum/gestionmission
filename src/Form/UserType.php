@@ -88,43 +88,40 @@ class UserType extends AbstractType
                     new Assert\NotBlank()
                 ]
             ])
-            ->add('roles' , ChoiceType:: class , [
-
+            ->add('roles', ChoiceType::class, [
+                'label' => 'Rôles',
                 'mapped' => true,
-                'expanded' => true,
-                'multiple' => false,
-                'attr' => [
-                    'class' => 'form',
+                'multiple' => true,      // plusieurs rôles possibles
+                'expanded' => true,      // affichage sous forme de cases à cocher
+                'choices' => [
+                    'Administrateur' => 'ROLE_ADMIN',
+                    'Utilisateur'    => 'ROLE_USER',
+                    'Chauffeur'      => 'ROLE_CHAUFFEUR',
                 ],
-                'label' => 'Roles ',
+                'choice_attr' => function ($choice, $key, $value) {
+                    return [
+                        'class' => 'btn-check', // classe Bootstrap pour custom radio/checkbox
+                        'autocomplete' => 'off',
+                    ];
+                },
                 'label_attr' => [
-                    'class' => 'form-label mt-4'
+                    'class' => 'form-label mt-3 d-block'
                 ],
-
                 'attr' => [
-                    'class' => 'btn-group btn-group-toggle',
+                    'class' => 'btn-group d-flex', // groupe de boutons
                     'data-toggle' => 'buttons'
                 ],
+            ])
 
-                'multiple' => true,
-            'expanded' => true, // render check-boxes
-            'choices' => [
-                'admin' => 'ROLE_ADMIN',
-                'user' => 'ROLE_USER',
-                'Chauffeur' => 'ROLE_CHAUFFEUR',
-            ],
-
-                'choice_attr' => [
-                    'class' => 'btn btn-secondary' // Ajoutez la classe Bootstrap souhaitée ici
-                ],
-            ]) 
             ->add('Status' , ChoiceType:: class , [
                 'attr' => [
                     'class' => 'form',
                 ],
+                 'expanded' => true,   // affichage en boutons radio
+                 'attr' => ['class' => 'form-check'],
                 'label' => 'Status ',
                 'label_attr' => [
-                    'class' => 'form-label mt-4'
+                    'class' => 'form-label fw-bold mt-3'
                 ],
                 'choices' => [
                     'ACTIF'=> 'ACTIF' ,
@@ -133,6 +130,7 @@ class UserType extends AbstractType
             ])
             ->add('mission', EntityType::class, ['class' => Evenement::class,
             'placeholder' => 'Choisissez la mission',
+            'required' => false, 
             'attr' => [
                 'class' => 'form-control',
                 'data-live-search' => 'true',

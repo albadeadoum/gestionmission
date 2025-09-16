@@ -5,7 +5,7 @@
 {% block body %}
 <div class="row align-items-start">
     <div class="col">
-        <div class="card card-success">
+        <div class="card card-secondary">
             <div class="card-header">
                 <h3 class="card-title">Liste des Entretiens</h3>
                 {% if is_granted('ROLE_ADMIN') %}
@@ -26,15 +26,45 @@
                 {% endif %}
             </div>
             <div class="card-body">
-                <table id="example2" class="table table-striped">
+
+            
+                {% set currentYear = "now"|date("Y") %}
+                {% set totalCost = 0 %}
+                {% set totalCostAnnée = 0 %}
+                {% set entretienCount = 0 %}
+                {% set entretien = 0 %}
+                {% for piece in pieces %}
+                    {% set totalCost = totalCost + piece.cout %}
+                    {% set entretien = entretien + 1 %}
+                {% endfor %}
+                {% for piece in pieces %}
+                    {% if piece.Date and piece.Date|date("Y") == currentYear %}
+                        {% set totalCostAnnée = totalCostAnnée + piece.cout %}
+                        {% set entretienCount = entretienCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                {#<div class="alert alert-info">
+                    <strong>Coût Total des Entretiens :</strong> {{ totalCost }} F CFA<br>
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                </div>#}
+                <div class="alert alert-info">
+                    <strong>Année :</strong> {{ currentYear }} <br>
+                    <strong>Nombre d'entretiens :</strong> {{ entretienCount }} <br>
+                    <strong>Coût Total :</strong> {{ totalCost }} F CFA
+                </div>
+
+                <table id="example2" class="table table-striped table-bordered text-center">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Véhicule</th>
+                            <th>Mission</th>
                             <th>Marque</th>
                             <th>Description</th>
                             <th>Quantité</th>
                             <th>Coût</th>
+                            <th>L.Reparation</th>
                             <th>Observation</th>
                             <th></th>
                         </tr>
@@ -44,10 +74,12 @@
                             <tr data-id="{{ piece.id }}">
                                 <td>{{ piece.Date ? piece.Date|date('d-m-Y') : '' }}</td>
                                 <td>{{ piece.Vehicule }}</td>
+                                <td>{{ piece.event }}</td>
                                 <td>{{ piece.Vehicule.Marque }}</td>
                                 <td>{{ piece.Nom }}</td>
                                 <td>{{ piece.Quantitite }}</td>
                                 <td>{{ piece.cout }} F CFA</td>
+                                <td>{{ piece.garage }} </td>
                                 <td>{{ piece.Observation }}</td>
                                 <td>
                                     {% if is_granted('ROLE_ADMIN') %}
@@ -79,6 +111,7 @@
 
 
 
+{#
 <!-- Modal pour Ajouter une Pièce -->
 <div class="modal fade" id="addPieceModal" tabindex="-1" aria-labelledby="addPieceModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -119,7 +152,29 @@
         </div>
     </div>
 </div>
+#}
 
+ <!-- Modal Bootstrap -->
+<div class="modal fade" id="addPieceModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Ajouter une anomalier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form, {'attr': {'id': 'MotoForm'}}) }}
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal Bootstrap pour l'édition -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -144,7 +199,7 @@
 
 <!-- Script pour l'impression -->
 <script>
-    function imprimerPiece(id) {
+    /*function imprimerPiece(id) {
         var ligne = document.querySelector("tr[data-id='" + id + "']").children;
         var contenu = `
             <html>
@@ -212,9 +267,452 @@
         win.document.close();
     }
 
-    
+  function imprimerPiece(id) {
+    var ligne = document.querySelector("tr[data-id='" + id + "']").children;
+    var contenu = `
+        <html>
+        <head>
+            <title>FICHE D'ANOMALIES OU DE DEMANDE D'INTERVENTION</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .header {
+                    display: flex;
+                    margin-bottom: 10px;
+                }
+                .logo {
+                    width: 100px;
+                    height: 100px;
+                    border: 1px solid #000;
+                    margin-right: 20px;
+                    text-align: center;
+                    line-height: 100px;
+                    font-size: 12px;
+                }
+                .header-text {
+                    flex: 1;
+                }
+                .header-text div {
+                    margin-bottom: 5px;
+                }
+                .ministry {
+                    font-weight: bold;
+                    margin-top: 10px;
+                }
+                .document-title {
+                    text-align: center;
+                    font-weight: bold;
+                    margin: 20px 0;
+                    text-decoration: underline;
+                }
+                .table-border {
+                    border: 1px solid #000;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                }
+                .vehicle-info {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .anomalies-box {
+                    border: 1px solid #000;
+                    padding: 10px;
+                    margin: 10px 0;
+                }
+                .anomalies-title {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .signature-line {
+                    margin: 5px 0;
+                    display: flex;
+                }
+                .signature-label {
+                    width: 150px;
+                    font-weight: bold;
+                }
+                .signature-dots {
+                    flex: 1;
+                    border-bottom: 1px dotted #000;
+                    margin-left: 10px;
+                }
+                .approval {
+                    font-weight: bold;
+                    margin-top: 30px;
+                    text-decoration: underline;
+                }
+                @media print {
+                    body {
+                        padding: 0;
+                    }
+                    .no-print {
+                        display: none;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="logo">
+                <img src="{{ absolute_url(asset('ins-logo.png')) }}" alt="Logo Niger" style="height: 200px; width: 120px; "></div>
+                <div class="header-text">
+                    <div>RÉPUBLIQUE DU NIGER</div>
+                    <div>Fraternité - Travail - Progrès</div>
+                    <div class="ministry">MINISTERE DE L'ECONOMIE ET DES FINANCES</div>
+                    <div class="ministry">INSTITUT NATIONAL DE LA STATISTIQUE</div>
+                    <div>Établissement Public à Caractère Administratif</div>
+                    <div>Direction des Ressources Financières et du Matériel</div>
+                    <div>Division du Matériel et de la Logistique</div>
+                    <div>Service de la Logistique</div>
+                </div>
+            </div>
 
+            <div class="document-title">FICHE D'ANOMALIES OU DE DEMANDE D'INTERVENTION</div>
 
+            <div class="table-border">
+                <div class="vehicle-info-container">
+  <div class="info-row header">
+    <div class="info-cell">N° VÉHICULE</div>
+    <div class="info-cell">DIRECTION</div>
+    <div class="info-cell">SIGNATURE</div>
+    <div class="info-cell">DATE</div>
+  </div>
+  <div class="info-row data">
+    <div class="info-cell">${ligne[1].innerText}</div>
+    <div class="info-cell">${ligne[2].innerText}</div>
+    <div class="info-cell"></div>
+    <div class="info-cell">${ligne[0].innerText}</div>
+  </div>
+</div>
+
+<style>
+  .vehicle-info-container {
+    font-family: Arial, sans-serif;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+  }
+  
+  .info-row {
+    display: flex;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .info-row:last-child {
+    border-bottom: none;
+  }
+  
+  .info-cell {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .header .info-cell {
+    font-weight: bold;
+    background-color: #f8f8f8;
+  }
+  
+  @media (max-width: 600px) {
+    .info-row {
+      flex-direction: column;
+    }
+    .info-cell {
+      text-align: left;
+      border-bottom: 1px dotted #ddd;
+    }
+  }
+</style>
+                <div class="anomalies-box">
+                    <div class="anomalies-title">ANOMALIES CONSTATEES PAR le mecaniciem interne</div>
+                    <div>- ${ligne[4].innerText}</div>
+                </div>
+
+                <div class="document-info">
+  <div class="info-item">
+    <div class="info-title">DATE DE LA DERNIERE INTERVENTION</div>
+    <div class="info-data">../../2025</div>
+  </div>
+  <div class="info-item">
+    <div class="info-title">DATE DE LA DERNIERE VIDANGE</div>
+    <div class="info-data">../../2025</div>
+  </div>
+  <div class="info-item">
+    <div class="info-title">LIEU DE L'INTERVENTION</div>
+    <div class="info-data">GARAGE sahel</div>
+  </div>
+  <div class="info-item">
+    <div class="info-title">DATE D'entree</div>
+    <div class="info-data">... /.../2025</div>
+  </div>
+  <div class="info-item">
+    <div class="info-title">DATE DE SORTIE</div>
+    <div class="info-data">.../.../2025</div>
+  </div>
+</div>
+
+<style>
+  .document-info {
+    margin: 15px 0;
+  }
+  
+  .info-item {
+    display: flex;
+    margin-bottom: 8px;
+    line-height: 2.5;
+  }
+  
+  .info-title {
+    flex: 1;
+    font-weight: bold;
+  }
+  
+  .info-data {
+    width: 150px;
+    text-align: right;
+  }
+  
+  @media (max-width: 600px) {
+    .info-item {
+      flex-direction: column;
+      line-height: 1.5;
+    }
+    .info-data {
+      text-align: left;
+      width: auto;
+      padding-left: 20px;
+    }
+  }
+</style>
+
+                <div class="signature-line" style="line-height: 2.5;>
+                    <div class="signature-label">VISA DU CSL/INS</div>
+                    <div class="signature-dots"></div>
+                </div>
+                <div class="signature-line" style="line-height: 2.5;>
+                    <div class="signature-label">VISA DU DML/INS</div>
+                    <div class="signature-dots"></div>
+                </div>
+                <div class="signature-line" style="line-height: 2.5;>
+                    <div class="signature-label">VISA DU DRFM/INS</div>
+                    <div class="signature-dots"></div>
+                </div>
+                <div class="signature-line" style="line-height: 2.5;>
+                    <div class="signature-label">visa du cmp/ob/ins</div>
+                    <div class="signature-dots"></div>
+                </div>
+                <div class="signature-line" style="line-height: 2.5;>
+                    <div class="signature-label">VISA DU SG/INS ...</div>
+                    <div class="signature-dots"></div>
+                </div>
+
+                <div class="approval">APPROBATION DE LA DIRECTION GENERALE</div>
+            </div>
+
+            <script>
+                window.onload = function() {
+                    window.print();
+                };
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    var win = window.open("", "", "width=800,height=600");
+    win.document.write(contenu);
+    win.document.close();
+}  
+*/
+
+function imprimerPiece(id) {
+    var ligne = document.querySelector("tr[data-id='" + id + "']").children;
+    var contenu = `
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .header {
+                    display: flex;
+                    margin-bottom: 10px;
+                }
+                .logo {
+                    width: 100px;
+                    height: 100px;
+                    border: 1px solid #000;
+                    margin-right: 20px;
+                    text-align: center;
+                    line-height: 100px;
+                    font-size: 12px;
+                }
+                .header-text {
+                    flex: 1;
+                }
+                .header-text div {
+                    margin-bottom: 5px;
+                }
+                .ministry {
+                    font-weight: bold;
+                    margin-top: 10px;
+                }
+                .document-title {
+                    text-align: center;
+                    font-weight: bold;
+                    margin: 20px 0;
+                    text-decoration: underline;
+                }
+                .table-border {
+                    border: 1px solid #000;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                }
+                .vehicle-info {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .anomalies-box {
+                    border: 1px solid #000;
+                    padding: 10px;
+                    margin: 10px 0;
+                }
+                .anomalies-title {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .signature-line {
+                    margin: 5px 0;
+                    display: flex;
+                }
+                .signature-label {
+                    width: 150px;
+                    font-weight: bold;
+                }
+                .signature-dots {
+                    flex: 1;
+                    border-bottom: 1px dotted #000;
+                    margin-left: 10px;
+                }
+                .approval {
+                    font-weight: bold;
+                    margin-top: 30px;
+                    text-decoration: underline;
+                }
+                @media print {
+                    body {
+                        padding: 0;
+                    }
+                    .no-print {
+                        display: none;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <table style="float: left;width:552.85pt;border-collapse:collapse;border:none;margin-left:4.8pt;margin-right:4.8pt;">
+                    <tbody>
+                        <tr>
+                            <td style="width:120.5pt;padding:0cm 5.4pt 0cm 5.4pt;height:130.4pt;">
+                                <p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:-26.65pt;text-align:center;text-indent:26.65pt;font-size:16px;font-family:"Times New Roman",serif;'>
+                                <img src="{{ absolute_url(asset('ins-logo.png')) }}" alt="Logo Niger" style="height: 151; width: 108; "></div>
+                            </p>
+                            </td>
+                            <td style="width:432.35pt;padding:0cm 5.4pt 0cm 5.4pt;height:130.4pt;">
+                                <p style='margin-top:3.85pt;margin-right:84.1pt;margin-bottom:0cm;margin-left:8.8pt;font-size:21px;font-family:"Calibri",sans-serif;color:#231F20;'>&nbsp;</p>
+                                <p style='margin-top:3.85pt;margin-right:84.1pt;margin-bottom:0cm;margin-left:8.8pt;font-size:21px;font-family:"Calibri",sans-serif;color:#231F20;'>R&Eacute;PUBLIQUE DU NIGER</p>
+                                <p style='margin-top:1.0pt;margin-right:84.1pt;margin-bottom:0cm;margin-left:8.8pt;font-size:15px;font-family:"Calibri",sans-serif;color:#231F20;font-weight:bold;'>Fraternit&eacute; - Travail - Progr&egrave;s</p>
+                                <p style='margin-top:.25pt;margin-right:84.1pt;margin-bottom:0cm;margin-left:8.8pt;line-height:16.35pt;font-size:18px;font-family:"Calibri",sans-serif;color:#414042;font-weight:bold;'>MINISTERE DE L&rsquo;ECONOMIE ET DES FINANCES</p>
+                                <p style='margin-top:.25pt;margin-right:84.1pt;margin-bottom:0cm;margin-left:8.8pt;line-height:16.35pt;font-size:18px;font-family:"Calibri",sans-serif;color:#414042;font-weight:bold;'>INSTITUT NATIONAL DE LA STATISTIQUE</p>
+                                <p style='margin-top:0cm;margin-right:84.2pt;margin-bottom:0cm;margin-left:8.8pt;font-size:15px;font-family:"Calibri",sans-serif;color:#414042;'>&Eacute;tablissement Public &agrave; Caract&egrave;re Administratif</p>
+                                <p style='margin-top:0cm;margin-right:84.2pt;margin-bottom:0cm;margin-left:8.8pt;font-size:16px;font-family:"Calibri",sans-serif;color:#414042;font-weight:bold;'>Direction des Ressources Financi&egrave;res et du Mat&eacute;riel</p>
+                                <p style='margin-top:0cm;margin-right:84.2pt;margin-bottom:0cm;margin-left:8.8pt;font-size:16px;font-family:"Calibri",sans-serif;color:#414042;'>Division du Mat&eacute;riel et de la Logistique</p>
+                                <p style='margin-top:0cm;margin-right:84.2pt;margin-bottom:0cm;margin-left:8.8pt;font-size:16px;font-family:"Calibri",sans-serif;color:#414042;'>Service de la Logistique</p>
+                                <p style='margin-top:0cm;margin-right:84.2pt;margin-bottom:0cm;margin-left:8.8pt;font-size:16px;font-family:"Calibri",sans-serif;color:#414042;'><span style="font-family:Calibri;color:black;">&nbsp;</span></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="document-title">FICHE D'ANOMALIES OU DE DEMANDE D'INTERVENTION</div>
+
+            <table style="float: left;width:545.5pt;border-collapse:collapse;border:none;margin-left:4.8pt;margin-right:4.8pt;">
+    <tbody>
+        <tr>
+            <td style="width: 545.5pt;border: 1pt solid windowtext;padding: 0cm 5.4pt;height: 527.8pt;vertical-align: top;">
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>N&deg; VEHICULE&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;DIRECTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SIGNATURE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; DATE</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>${ligne[1].innerText} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ******** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 30/12/2024</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <table style="width:538.6pt;border-collapse:collapse;border:none;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 538.6pt;border: 1pt solid windowtext;padding: 0cm 5.4pt;height: 84.5pt;vertical-align: top;">
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strongANOMALIES CONSTATEES</strong><strong><span style="font-size:12px;"> </span></strong></p>
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:12px;">&nbsp;</span></strong></p>
+                                <div style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'>
+                                    <ul style="margin-bottom:0cm;list-style-type: disc;margin-left: 43.45px;">
+                                        <li style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong> ${ligne[4].innerText}</strong></li>
+                                    </ul>
+                                </div>
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-left:35.45pt;text-align:justify;'><strong>&nbsp;</strong></p>
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-left:35.45pt;text-align:justify;'><strong>&nbsp;</strong></p>
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-left:53.45pt;text-align:justify;'><strong>&nbsp;</strong></p>
+                                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;margin-left:53.45pt;text-align:justify;'><strong>&nbsp;</strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">DATE DE DERNIERE INTERVENTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;../../2025</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">LIEU DE L’INTERVENTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span> ${ligne[7].innerText} </strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">&nbsp; &nbsp; &nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">DATE D’ENTREE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &hellip; /&hellip;/2025</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">DATE DE SORTIE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &hellip;/&hellip;/2025</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">VISA DU CSL/INS   &nbsp; &nbsp; &nbsp;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;.. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:13px;">VISA DU DML/INS  .&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;..</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">VISA DU DRFM/INS  &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;..</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">VISA DU CMP/OB/INS &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><span style="font-size:13px;">VISA DU SG/INS &hellip; &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;..</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong>&nbsp;</strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><strong><u><span style="font-size:13px;">APPROBATION DU DIRECTION GENERALE</span></u></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:19px;">&nbsp;</span></strong></p>
+                <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:justify;'><strong><span style="font-size:19px;">&nbsp;</span></strong></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+            <script>
+                window.onload = function() {
+                    window.print();
+                };
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    var win = window.open("", "", "width=800,height=600");
+    win.document.write(contenu);
+    win.document.close();
+}  
     
 
 

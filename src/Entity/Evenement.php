@@ -9,9 +9,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\Provider\Exception\NoMappingFound;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
+#[Vich\Uploadable]
 class Evenement
 {
     #[ORM\Id]
@@ -61,11 +65,44 @@ class Evenement
     #[ORM\OneToMany(mappedBy: 'mission', targetEntity: User::class)]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Piece>
+     */
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Piece::class)]
+    private Collection $pieces;
+
+    /**
+     * @var Collection<int, Agent>
+     */
+    #[ORM\ManyToMany(targetEntity: Agent::class)]
+    #[ORM\JoinTable(name: "evenement_agent")]
+    private Collection $agents;
+
+    #[ORM\ManyToOne(inversedBy: 'evenements')]
+    private ?Bailleur $bailleur = null; // nom au singulier et cohérent
+    
+
+     // NOTE: This is not a mapped field of entity metadata, just a simple property.
+     #[Vich\UploadableField(mapping: 'products', fileNameProperty: 'imageName')]
+     private ?File $imageFile = null;
+ 
+     #[ORM\Column(nullable: true)]
+     private ?string $imageName = null;
+
+     #[ORM\Column(nullable: true)]
+     private ?\DateTimeImmutable $updatedAt = null;
+
+    
     
     public function __construct()
     {
         $this->carburants = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->pieces = new ArrayCollection();
+        $this->agents = new ArrayCollection();
+        $this->agents = new ArrayCollection();
+        
+        
     }
 
     
@@ -284,6 +321,97 @@ class Evenement
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Piece>
+     */
+    public function getPieces(): Collection
+    {
+        return $this->pieces;
+    }
+
+    public function addPiece(Piece $piece): static
+    {
+        if (!$this->pieces->contains($piece)) {
+            $this->pieces->add($piece);
+            $piece->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removePiece(Piece $piece): static
+    {
+        if ($this->pieces->removeElement($piece)) {
+            // set the owning side to null (unless already changed)
+            if ($piece->getEvent() === $this) {
+                $piece->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Agent>
+     */
+    public function getAgents(): Collection
+    {
+        return $this->agents;
+    }
+
+
+    public function addAgent(Agent $agent): static
+    {
+        if (!$this->agents->contains($agent)) {
+            $this->agents->add($agent);
+        }
+        return $this;
+    }
+
+    public function removeAgent(Agent $agent): static
+    {
+        $this->agents->removeElement($agent);
+        return $this;
+    }
+
+    public function getBailleur(): ?Bailleur
+    {
+        return $this->bailleur;
+    }
+
+    public function setBailleur(?Bailleur $bailleur): self
+    {
+        $this->bailleur = $bailleur;
+        return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
 
    
 }

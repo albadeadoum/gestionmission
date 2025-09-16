@@ -66,6 +66,9 @@ class Vehicule
      #[ORM\OneToMany(mappedBy: 'vehicule', targetEntity: Assurance::class, cascade: ['persist', 'remove'])]
      private Collection $assurances;
 
+     #[ORM\Column(length: 255, nullable: true)]
+     private ?string $direction = null;
+
 
 
  
@@ -308,6 +311,18 @@ class Vehicule
                 $assurance->setVehicule(null); // ✅ Nettoyage de la relation
             }
         }
+
+        return $this;
+    }
+
+    public function getDirection(): ?string
+    {
+        return $this->direction;
+    }
+
+    public function setDirection(?string $direction): static
+    {
+        $this->direction = $direction;
 
         return $this;
     }

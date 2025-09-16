@@ -43,6 +43,11 @@
         font-size: 16px; /* ajustez la taille de police selon vos besoins */
         }
 
+
+
+body {
+            zoom: 0.8; /* Réduction à 80 % */
+        }
         
 
         </style>
@@ -76,6 +81,9 @@
             <script src="{{asset('assets/dist/js/adminlte.js')}}"></script>
             <!-- AdminLTE for demo purposes -->
             <script src="{{asset('assets/dist/js/demo.js')}}"></script>
+
+            <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+            <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
             
            
 
@@ -104,7 +112,7 @@
 $(function () {
     $("#example1").DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+            "url": ""
         },
         "lengthChange": false,
         "autoWidth": false,
@@ -151,7 +159,7 @@ $(function () {
 $(function () {
     $("#example2").DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+            "url": "cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
         },
         "lengthChange": false,
         "autoWidth": false,
@@ -281,7 +289,7 @@ myModal.addEventListener('shown.bs.modal', () => {
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                    <img src="{{asset('ins-logo.png')}}"  alt="User Image" style="width: 70px; height: auto;">
+                    <img src="{{asset('LOGO_RGPH5-23.jpg')}}"  alt="User Image" style="width: 70px; height: auto;">
                     </div>
                     <div class="info">
                     <a href="#" class="d-block" style="font-size: 30px;">INS NIGER</a>
@@ -309,10 +317,11 @@ myModal.addEventListener('shown.bs.modal', () => {
                         <a href="{{ path('app_home') }}" class="nav-link">
                         <i class="fa-solid fa-house"></i>
                         <p style="font-size: 15px; font-weight: bold;">
-                           Tableau de bord
+                           Accueil
                         </p>
                         </a>
                     </li>
+                    
                     <li class="nav-item">
                         <a href="{{ path('app_evenement_index') }}" class="nav-link">
                        <i class="fa-regular fa-calendar-days"></i>
@@ -321,19 +330,40 @@ myModal.addEventListener('shown.bs.modal', () => {
                         </p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ path('app_agent_index') }}" class="nav-link">
+                       <i class="fa fa-users"></i>
+                        <p style="font-size: 15px; font-weight: bold;">
+                            Agents
+                        </p>
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a href="{{ path('app_vehicule_index') }}" class="nav-link">
                        <i class="fa-solid fa-car"></i>
                         <p style="font-size: 15px; font-weight: bold;">
-                            Parc Auto
+                            Parc-Auto
                         </p>
                         </a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ path('app_bailleur_index') }}" class="nav-link">
+                       <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <p style="font-size: 15px; font-weight: bold;">
+                            Bailleurs
+                        </p>
+                        </a>
+                    </li>
+
+
                     <li class="nav-item">
                         <a href="{{ path('app_chauffeur_index') }}" class="nav-link">
-                       <i class="fa-solid fa-id-card"></i>
+                       <i class="fa-solid fa-user"></i> <i class="fa-solid fa-car"></i>
                         <p style="font-size: 15px; font-weight: bold;">
-                            Liste des Chauffeurs
+                            Chauffeurs
                         </p>
                         </a>
                     </li>
@@ -366,7 +396,7 @@ myModal.addEventListener('shown.bs.modal', () => {
                         <a href="{{ path('app_moto_index') }}" class="nav-link">
                        <i class="fa-solid fa-motorcycle"></i>
                         <p- style="font-size: 15px; font-weight: bold;">
-                             Situations Des Motos
+                             Motos
                         </p>
                         </a>
                     </li>
@@ -422,10 +452,10 @@ myModal.addEventListener('shown.bs.modal', () => {
     </body>
 
     <footer class="main-footer">
-                <strong> &copy; 2023 <a href="#"></a>.</strong>
+                <strong> &copy; 2025 <a href="#"></a>.</strong>
                 All rights reserved.
                 <div class="float-right d-none d-sm-inline-block">
-                <b></b> 
+                <b> <span style="font-size: 0.8rem; margin-top: 5px;">{{ app.user }}</span> </b> 
                 </div>
             </footer>
 </html>

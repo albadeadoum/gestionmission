@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agent index{% endblock %}
+
+{% block body %}
+    <div class="row align-items-start">
+       <div class="col">
+            <!-- Form Element sizes -->
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Personnels</h3> {% if is_granted('ROLE_ADMIN') %} <a  style="float: right;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMotoModal"><i class="fa-sharp fa-solid fa-plus"></i></a>
+                {#<a href="{{ path('app_moto_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>#}{% endif %}
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-striped table-bordered text-center">
+                    <thead>
+                        <tr>
+                            {#<th>Id</th>#}
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>Service</th>
+                            <th>Lien d'emploi</th>
+                            <th>Statut Actuel</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for agent in agents %}
+                        <tr>
+                            {#<td>{{ agent.id }}</td>#}
+                            <td>{{ agent.nom }}</td>
+                            <td>{{ agent.prenom }}</td>
+                            <td>{{ agent.service }}</td>
+                            <td>{{ agent.lienEmpl }}</td>
+                            <td>
+                            <td>{#
+                                {% set AgentLibre = true %}
+                                {% set currentDate = "now"|date("Y-m-d") %}
+                                {% for evenement in agent.evenements %}
+                                    {% if evenement.debut|date("Y-m-d") <= currentDate and currentDate <= evenement.fin|date("Y-m-d") %}
+                                        {% set AgentLibre = false %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if AgentLibre == false %}
+                                    <a class="btn btn-danger">Indisponible</a>
+                                {% else %}
+                                    <a class="btn btn-success">Disponible</a>
+                                {% endif %} #}
+                            </td>
+                            </td>
+                            <td>
+                                {#<a href="{{ path('app_agent_show', {'id': agent.id}) }}">show</a>
+                                <a href="{{ path('app_agent_edit', {'id': agent.id}) }}">edit</a>#}
+                                {% if is_granted('ROLE_ADMIN') %} 
+                                    <a href="#" class="btn btn-info edit-btn_agent" data-id="{{ agent.id }}">
+                                        <i class="fas fa-edit"></i> 
+                                    </a>
+                                    <a class="btn">{{ include('agent/_delete_form.html.twig') }}</a>{% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+     </div>
+              <!-- /.card-body -->
+         </div>
+    </div>
+
+
+    <!-- Modal Bootstrap -->
+<div class="modal fade" id="addMotoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Ajout Agent</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form, {'attr': {'id': 'AgentForm'}}) }}
+                    <button class="btn btn-success" style="margin-right: 10px;">{{ button_label|default('Enregistrer') }}</button>
+                    <button type="reset" class="btn btn-secondary" style="float: right;">{{ button_label2|default('Vider') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editAgentModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editAgentForm"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    // Gestion de l'édition des agents
+    document.querySelectorAll(".edit-btn_agent").forEach(button => {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const agentId = this.getAttribute("data-id");
+
+            fetch(`/agent/${agentId}/edit`, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.form) {
+                    document.getElementById("editAgentForm").innerHTML = data.form;
+                    const editModal = new bootstrap.Modal(document.getElementById("editAgentModal"));
+                    editModal.show();
+                }
+            })
+            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+        });
+    });
+
+    // Soumission du formulaire d'édition en AJAX
+    document.addEventListener("submit", function (event) {
+        if (event.target && event.target.matches("#editAgentForm form")) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Les données agent ont été mises à jour avec succès !");
+                    location.reload(); // Recharger la page après la modification
+                } else {
+                    alert("Erreur : " + data.errors);
+                }
+            })
+            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+        }
+    });
+</script>
+
+    {#<a href="{{ path('app_agent_new') }}">Create new</a>#}
+{% endblock %}

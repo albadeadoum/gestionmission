@@ -6,6 +6,7 @@ namespace App\Entity;
 use App\Repository\MotoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MotoRepository::class)]
@@ -29,7 +30,10 @@ class Moto
     private ?string $utilisateur = null;
 
     #[ORM\OneToMany(targetEntity: Assurance::class, mappedBy: 'moto', cascade: ['persist', 'remove'])]
-    private Collection $assurances; // ✅ Relation OneToMany avec Assurance
+    private Collection $assurances;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateAffec = null; // ✅ Relation OneToMany avec Assurance
 
     public function __construct()
     {
@@ -123,5 +127,17 @@ class Moto
 
         $retoure =$this->immatriculation. ' '.  $this->marque  ;
         return $retoure;  
+    }
+
+    public function getDateAffec(): ?\DateTimeInterface
+    {
+        return $this->dateAffec;
+    }
+
+    public function setDateAffec(?\DateTimeInterface $dateAffec): static
+    {
+        $this->dateAffec = $dateAffec;
+
+        return $this;
     }
 }

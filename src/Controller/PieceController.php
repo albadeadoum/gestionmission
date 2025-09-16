@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/piece')]
 class PieceController extends AbstractController
 {
-    #[Route('/', name: 'app_piece_index', methods: ['GET'])]
+    #[Route('/', name: 'app_piece_index', methods: ['GET', 'POST'])]
     public function index(Request $request, PieceRepository $pieceRepository, EntityManagerInterface $entityManager): Response
     {
         $piece = new Piece();
