@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\AgentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 class Agent
@@ -24,6 +27,18 @@ class Agent
 
     #[ORM\Column(length: 255)]
     private ?string $lien_empl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fonction = null;
+
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: "agents")]
+    private Collection $evenements;
+
+    public function __construct()
+    {
+        $this->evenements = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -73,4 +88,43 @@ class Agent
         $this->lien_empl = $lien_empl;
         return $this;
     }
+
+    public function getFonction(): ?string
+    {
+        return $this->fonction;
+    }
+
+    public function setFonction(?string $fonction): static
+    {
+        $this->fonction = $fonction;
+
+        return $this;
+    }
+
+    /**
+ * @return Collection<int, Evenement>
+ */
+public function getEvenements(): Collection
+{
+    return $this->evenements;
+}
+
+public function addEvenement(Evenement $evenement): static
+{
+    if (!$this->evenements->contains($evenement)) {
+        $this->evenements->add($evenement);
+        $evenement->addAgent($this); // synchroniser les deux côtés
+    }
+
+    return $this;
+}
+
+public function removeEvenement(Evenement $evenement): static
+{
+    if ($this->evenements->removeElement($evenement)) {
+        $evenement->removeAgent($this);
+    }
+
+    return $this;
+}
 }

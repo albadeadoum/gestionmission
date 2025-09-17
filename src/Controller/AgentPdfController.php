@@ -33,11 +33,14 @@ class AgentPdfController extends AbstractController
             'nom_complet'     => $agent->getPrenom() . ' ' . $agent->getNom(),
             'fonction'        => $agent->getService() ?? '',
             'objet'           => $evenement->getTitre(),
-            'destination'     => '', // si tu as une propriété Destination, mets $evenement->getDestination()
+            'destination'     => $evenement->getDestination(), 
             'date_depart'     => $evenement->getDebut()?->format('d/m/Y'),
             'date_retour'     => $evenement->getFin()?->format('d/m/Y'),
             'moyen_transport' => $evenement->getVehicule()?->getMarque() . ' - ' . $evenement->getVehicule()?->getImatriculation(),'Véhicule administratif',
             'imputation'      => $evenement->getBailleur(),
+            'service'         => $agent->getService(),
+            'fonction'         => $agent->getFonction(),
+            'lieuemploi'         => $agent->getLienEmpl(),
             'fait_a_le'       => (new \DateTime())->format('d/m/Y'),
         ];
 
@@ -78,11 +81,11 @@ class AgentPdfController extends AbstractController
             'nom_complet'     => $cahuffeur->getPrenom() . ' ' . $cahuffeur->getNom(),
             'fonction'        => 'chauffeur',
             'objet'           => $evenement->getTitre(),
-            'destination'     => '', // si tu as une propriété Destination, mets $evenement->getDestination()
             'date_depart'     => $evenement->getDebut()?->format('d/m/Y'),
             'date_retour'     => $evenement->getFin()?->format('d/m/Y'),
             'moyen_transport' => $evenement->getVehicule()?->getMarque() . ' - ' . $evenement->getVehicule()?->getImatriculation(),'Véhicule administratif',
             'imputation'      => $evenement->getBailleur(),
+            'destination'     => $evenement->getDestination(), 
             'fait_a_le'       => (new \DateTime())->format('d/m/Y'),
         ];
 
@@ -103,7 +106,7 @@ class AgentPdfController extends AbstractController
         ]);
     }
 
-
+/*
     #[Route('/etat/mission/{evenementId}', name: 'etat_mission_pdf')]
     public function etatMissionPdf(int $evenementId, EntityManagerInterface $em): Response
     {
@@ -166,6 +169,88 @@ class AgentPdfController extends AbstractController
         
     }
 
+*/
 
+#[Route('/etat/mission/{evenementId}', name: 'etat_mission_pdf')]
+public function etatMissionPdf(int $evenementId, EntityManagerInterface $em): Response
+{
+    $evenement = $em->getRepository(Evenement::class)->find($evenementId);
+
+    if (!$evenement) {
+        throw $this->createNotFoundException("Événement non trouvé");
+    }
+
+    // Récupération du bailleur (et ses taux)
+    $bailleur = $evenement->getBailleur();
+    $tauxCadre = $bailleur?->getTauxAg() ?? 100000; // taux pour les cadres
+    $tauxAux   = $bailleur?->getTauxOx() ?? 60000;  // taux pour le chauffeur/auxiliaires
+
+    // Durée en jours de la mission
+    $debut = $evenement->getDebut();
+    $fin   = $evenement->getFin();
+    $nbJours = $debut && $fin ? $debut->diff($fin)->days + 1 : 0;
+
+    $participants = [];
+
+    // Tous les agents
+    foreach ($evenement->getAgents() as $agent) {
+        $montantTotal = $tauxCadre * $nbJours;
+
+        $participants[] = [
+            'nom'         => $agent->getNom(),
+            'prenom'      => $agent->getPrenom(),
+            'service'     => $agent->getService(),
+            'fonction'     => $agent->getFonction(),
+            'jours'       => $nbJours,
+            'montant'     => $montantTotal,
+            'paiement1'   => $montantTotal * 0.9,
+            'paiement2'   => $montantTotal * 0.1,
+        ];
+    }
+
+    // Chauffeur unique
+    if ($evenement->getChauffeur()) {
+        $chauffeur = $evenement->getChauffeur();
+        $montantTotal = $tauxAux * $nbJours;
+
+        $participants[] = [
+            'nom'         => $chauffeur->getNom(),
+            'prenom'      => $chauffeur->getPrenom(),
+            'service'     => 'Chauffeur',
+            'jours'       => $nbJours,
+            'montant'     => $montantTotal,
+            'paiement1'   => $montantTotal * 0.9,
+            'paiement2'   => $montantTotal * 0.1,
+        ];
+    }
+
+    // Préparation des données pour le template PDF
+    $data = [
+        'evenement'    => $evenement,
+        'participants' => $participants,
+        'nbJours'      => $nbJours,
+        'date_today'   => (new \DateTime())->format('d/m/Y'),
+    ];
+
+    // Génération du PDF avec DomPDF
+    $html = $this->renderView('evenement/etat_pdf.html.twig', $data);
+
+    $options = new Options();
+    $options->set('isRemoteEnabled', true);
+    $options->set('defaultFont', 'DejaVu Sans');
+
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+
+    // Correction du nom de variable (cahuffeur → chauffeur)
+    $chauffeurNom = $evenement->getChauffeur() ? $evenement->getChauffeur()->getNom() : 'sans_chauffeur';
+
+    return new Response($dompdf->output(), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="ordre_mission_'.$chauffeurNom.'_'.$evenement->getId().'.pdf"',
+    ]);
+}
 
 }

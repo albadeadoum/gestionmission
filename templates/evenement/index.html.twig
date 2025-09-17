@@ -16,6 +16,7 @@
     <table class="table table-striped table-bordered text-center"  id="example1" >
         <thead>
             <tr>
+                <th></th>
                 <th>Objet</th>
                 <th>Vehicule</th>
                 <th>Chauffeur</th>
@@ -24,8 +25,8 @@
                 <th>Bailleur</th>
                 <th>Description</th>
                 <th>Destination</th>
-                <th>Dotation</th>
-                <th>Montant</th>
+                {#<th>Dotation</th>
+                <th>Montant</th>#}
                 {% if is_granted('ROLE_ADMIN') %}
                 {#<th>Background</th>
                 <th>Border</th>
@@ -37,6 +38,29 @@
         <tbody>
         {% for evenement in evenements %}
             <tr>
+                    {% set currentDate = "now"|date("Y-m-d") %}
+
+                    {% set reservations = [] %}
+                    {% set enCours = [] %}
+                    {% set finis = [] %}
+                <td data-order="{% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}1
+                        {% elseif evenement.fin.format("Y-m-d") <= currentDate and evenement.imageName is empty %}2
+                        {% elseif evenement.fin.format("Y-m-d") > currentDate %}3
+                        {% else %}4
+                        {% endif %}">
+                    
+                    {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                            <span class="status btn btn-success">En cours</span>
+                    {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
+                                    <span class="status btn btn-warning">Provisoire </span>
+                    {% else %}
+                    {% if evenement.imageName is empty %}
+                            <span class="status btn btn-secondary">En attente de finalisation</span>
+                    {% else %}
+                            <span class="status btn btn-danger">Finie</span>
+                    {% endif %}
+                    {% endif %}
+                </td>
                 <td>{{ evenement.titre }}</td>
                 <td>{{ evenement.Vehicule }}</td>
                 <td>{{ evenement.Chauffeur }}</td>
@@ -45,8 +69,8 @@
                 <td>{{ evenement.bailleur }}</td>
                 <td>{{ evenement.description }}</td>
                 <td>{{ evenement.Destination }}</td>
-                <td>{{ evenement.Dotation }}</td>
-                <td>{{ evenement.Montant }}</td>
+                {#<td>{{ evenement.Dotation }}</td>
+                <td>{{ evenement.Montant }}</td>#}
                 {% if is_granted('ROLE_ADMIN') %}
                 {#<td style = "color:{{ evenement.backgroundColor }}"><i class="fa-solid fa-square fa-2xl"></i></td>
                 <td style = "color:{{ evenement.borderColor }}"> <i class="fa-solid fa-square fa-2xl"></i></td>
@@ -57,8 +81,10 @@
                     <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-info "><i class="fa-solid fa-eye fa-xl" style="color: #FFFFF;"></i></a>
                     <a href="{{ path('app_for_mission', {'id':  evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>
                     {#<a href="" class="btn btn-info"><i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a>#}
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
                     <a class="btn">{{ include('evenement/_delete_form.html.twig') }}</a>
+                    {% endif %}
                    
                 </td>
                  {% endif %}

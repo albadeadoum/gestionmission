@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Carburant;
 use App\Entity\Piece;
 use App\Form\PieceType;
+use App\Entity\Agent;
 use App\Repository\CarburantRepository;
 use App\Repository\EvenementRepository;
 use App\Repository\PieceRepository;
@@ -57,6 +58,14 @@ class ForVehiculeController extends AbstractController
         $piece = $repository->findBy(['event' => $id]);
         return $this->render('for/piece.html.twig', [
             'pieces'=> $piece,
+        ]);
+    }
+    #[Route('/for/agent/evenement/{id}', name: 'app_for_agent_evenement')]
+    public function indexforagent(EvenementRepository $evenement , int $id, EntityManagerInterface $entityManager): Response
+    {
+        $evenements = $evenement->findBy(['agents' => $id]);
+        return $this->render('for/agent.html.twig', [
+            'evenements'=> $evenements,
         ]);
     }
     /*#[Route('/for/vehicule', name: 'app_for_vehicule')]

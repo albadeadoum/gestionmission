@@ -55,13 +55,14 @@
             <div class="card card-secondary">
               <div class="card-header">
               
-                <h3 class="card-title">Liste des missions</h3>
+                <h3 class="card-title">Missions</h3>
                 
               </div>
               <div class="card-body">
                   <table class="table table-striped table-bordered text-center"  id="example3">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Objet</th>
                                     <th>Vehicule</th>
                                     <th>Chauffeur</th>
@@ -72,6 +73,28 @@
                             <tbody>
                             {% for evenement in evenements %}
                                 <tr>
+                                        {% set currentDate = "now"|date("Y-m-d") %}
+                                        {% set reservations = [] %}
+                                        {% set enCours = [] %}
+                                        {% set finis = [] %}
+                                    <td data-order="{% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}1
+                                        {% elseif evenement.fin.format("Y-m-d") <= currentDate and evenement.imageName is empty %}2
+                                        {% elseif evenement.fin.format("Y-m-d") > currentDate %}3
+                                        {% else %}4
+                                        {% endif %}">
+                                        
+                                        {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
+                                                <span class="status btn btn-success">En cours</span>
+                                        {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
+                                                        <span class="status btn btn-warning">Provisoire </span>
+                                        {% else %}
+                                        {% if evenement.imageName is empty %}
+                                                <span class="status btn btn-secondary">En attente de finalisation</span>
+                                        {% else %}
+                                                <span class="status btn btn-danger">Finie</span>
+                                        {% endif %}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ evenement.titre }}</td>
                                     <td>{{ evenement.Vehicule }}</td>
                                     <td>{{ evenement.Chauffeur }}</td>
@@ -90,7 +113,7 @@
             </div>
      </div>
  </div>
-
+{#
    <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
@@ -141,7 +164,7 @@
                                            <a  class="btn btn-warning">{{ vehicule.getEvenements[0].titre }} - {{ vehicule.getEvenements[0].debut.format('Y-m-d') }}</a>
                                         {% endif %}
                                     {% endfor %}-
-                                </td>#}
+                                </td>
                             </tr>
                         {% else %}
                             <tr>
@@ -215,13 +238,13 @@
         {% endfor %}
         </tbody>
     </table>
-     </div>#}
+     </div>
               <!-- /.card-body -->
  </div>
  </div>
  </div>
 
- {##}
+ 
  <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
@@ -242,12 +265,12 @@
             </tr>
         </thead>
         <tbody>
-        {# Définir les dates pour la gestion des couleurs #}
+        
         {% set today = 'now'|date('Y-m-d') %}
         {% set warning_threshold = 'now +15 days'|date('Y-m-d') %}
         
 
-        {# Tri des assurances par date de fin, en plaçant les dates null à la fin #}
+        {# Tri des assurances par date de fin, en plaçant les dates null à la fin 
         {% for assurance in assurances|sort((a, b) => (a.fin ?? '9999-12-31') <=> (b.fin ?? '9999-12-31')) %}
             {% set date_fin = assurance.fin ? assurance.fin|date('Y-m-d') : '' %}
             <tr 
@@ -278,7 +301,7 @@
                     {% if date_fin and date_fin < today %}
                         <strong>Expirée ({{ date_fin }})</strong>
                     {% elseif date_fin and date_fin >= today and date_fin <= warning_threshold %} 
-                                <strong> ({{ date_fin }})  {# {{ date_fin  - today }} #} </strong>
+                                <strong> ({{ date_fin }})  {# {{ date_fin  - today }}  </strong>
                     {% else %}
                         {{ date_fin }} 
                     {% endif %}

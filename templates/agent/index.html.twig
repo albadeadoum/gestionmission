@@ -19,6 +19,7 @@
                             <th>Nom</th>
                             <th>Prenom</th>
                             <th>Service</th>
+                            <th>Fonction</th>
                             <th>Lien d'emploi</th>
                             <th>Statut Actuel</th>
                             <th></th>
@@ -31,9 +32,10 @@
                             <td>{{ agent.nom }}</td>
                             <td>{{ agent.prenom }}</td>
                             <td>{{ agent.service }}</td>
+                            <td>{{ agent.fonction }}</td>
                             <td>{{ agent.lienEmpl }}</td>
+                            
                             <td>
-                            <td>{#
                                 {% set AgentLibre = true %}
                                 {% set currentDate = "now"|date("Y-m-d") %}
                                 {% for evenement in agent.evenements %}
@@ -43,15 +45,16 @@
                                 {% endfor %}
 
                                 {% if AgentLibre == false %}
-                                    <a class="btn btn-danger">Indisponible</a>
+                                    <a class="btn btn-danger">En mission</a>
                                 {% else %}
                                     <a class="btn btn-success">Disponible</a>
-                                {% endif %} #}
-                            </td>
+                                {% endif %} 
+                            
                             </td>
                             <td>
                                 {#<a href="{{ path('app_agent_show', {'id': agent.id}) }}">show</a>
                                 <a href="{{ path('app_agent_edit', {'id': agent.id}) }}">edit</a>#}
+                                <a href="{{ path('app_for_agent_evenement', {'id': agent.id}) }}" class="btn"><i class="fa-solid fa-list fa-2xl" style="color: #4980df;"></i></a>
                                 {% if is_granted('ROLE_ADMIN') %} 
                                     <a href="#" class="btn btn-info edit-btn_agent" data-id="{{ agent.id }}">
                                         <i class="fas fa-edit"></i> 

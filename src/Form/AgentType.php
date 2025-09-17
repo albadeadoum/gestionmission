@@ -58,8 +58,8 @@ class AgentType extends AbstractType
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 255]),
-                    new Assert\NotBlank()
+                    new Assert\Length(['min' => 0, 'max' => 255]),
+                    
                 ]
             ])
             ->add('lien_empl', TextType::class, [
@@ -73,8 +73,23 @@ class AgentType extends AbstractType
                     'class' => 'form-label mt-4'
                 ],
                 'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 255]),
-                    new Assert\NotBlank()
+                    new Assert\Length(['min' => 0, 'max' => 255]),
+                    
+                ]
+            ])
+            ->add('fonction', TextType::class, [
+                'attr' => [
+                    'class' => 'form-control',
+                    'minlength' => '2',
+                    'maxlength' => '500'
+                ],
+                'label' => 'Fonction',
+                'label_attr' => [
+                    'class' => 'form-label mt-4'
+                ],
+                'constraints' => [
+                    new Assert\Length(['min' => 0, 'max' => 255]),
+                    
                 ]
             ])
             /*->add('mission', EntityType::class, [

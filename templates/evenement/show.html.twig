@@ -105,7 +105,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>Destionation</th>
+                                <th>Destination</th>
                                 <td></td>
                             </tr>
                             <tr>
@@ -123,7 +123,7 @@
                                     {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
                                     <span class="status btn btn-success">En cours</span>
                                     {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
-                                    <span class="status btn btn-warning">Prévu </span>
+                                    <span class="status btn btn-warning">Provisoire </span>
                                     {% else %}
                                     {% if evenement.imageName is empty %}
                                         <span class="status btn btn-secondary">En attente de finalisation</span>
@@ -180,7 +180,11 @@
               <div class="card-header">
               
                 <h3 class="card-title">Menbres de la mission</h3>
+                {% set currentDate = "now"|date("Y-m-d") %}
+                {% if evenement.debut.format("Y-m-d") >= currentDate  %}
                 <a data-bs-toggle="modal" data-bs-target="#addAgentModal"  style="float: right;" class="btn btn-primary"><i class="fa-sharp fa-solid fa-plus"></i></a>
+                {% endif %}
+                
                 <a href="{{ path('evenement_pdf', {'id': evenement.id}) }}" target="_blank" class="btn btn-primary" style="float: right;">
                                         <i class="fa-solid fa-print"></i>
                                     </a>
@@ -213,10 +217,13 @@
                                     class="btn btn-secondary">
                                     <i class="fa-solid fa-print"></i>
                                     </a>
-                                    
+                                    {% set currentDate = "now"|date("Y-m-d") %}
+                                    {% if evenement.debut.format("Y-m-d") >= currentDate  %}
                                     <button class="btn btn-danger btn-sm remove-agent-btn" data-agent-id="{{ agent.id }}">
                                     <i class="fa fa-times" aria-hidden="true"></i></button>
                                     </td>
+                                    {% endif %}
+                                    
                                 </tr>
                             {% endfor %}
                             {% else %}
