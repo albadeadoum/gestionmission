@@ -40,18 +40,32 @@
     </div>#}
 
 
-
+<h2>{{ evenement.titre }}  </h2>
 <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Missions</h3> 
+                <h3 class="card-title">Missions<a href="{{ path('app_for_mission', {'id':  evenement.id}) }}" class="btn btn-secondary">
+                <i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a></h3> 
                 
-                <a href="{{ path('etat_mission_pdf', {evenementId: evenement.id}) }}" 
+                <a href="{{ path('etat_mission_avance_pdf', {evenementId: evenement.id}) }}" 
                 class="btn btn-sm btn-primary" style="float: right;" target="_blank">
-                <i class="fa fa-file-pdf"></i> État de paiement PDF
+                <i class="fa fa-file-pdf"></i> État avance PDF
                 </a>
+
+                {% if evenement.imageName is null or evenement.imageName == '' %}
+                      <a href="#" 
+                class="btn btn-sm btn-primary" style="float: right;" id="btnReliquat">
+                <i class="fa fa-file-pdf"></i> État reliquat PDF
+                </a>           
+                {% else %}
+                    <a href="{{ path('etat_reliquat_pdf', {evenementId: evenement.id}) }}" 
+                class="btn btn-sm btn-primary" style="float: right;" target="_blank">
+                <i class="fa fa-file-pdf"></i> État reliquat PDF
+                </a>                    
+                {% endif %}                
+                
 
                 
               </div>
@@ -136,9 +150,18 @@
                             <tr>
                                 <th>Rapport</th>
                                 <td>
-                                 <a href="#" class="btn btn-info edit-btn_evenement" data-id="{{ evenement.id }}">
+                                {% set currentDate = "now"|date("Y-m-d") %}
+                                {% if evenement.fin.format("Y-m-d") <= currentDate  %}
+                                  <a href="#" class="btn btn-info edit-btn_evenement" data-id="{{ evenement.id }}">
+                                    <i class="fas fa-edit"></i> 
+                                </a>  
+                                {% else %}
+                                <a href="#" class="btn btn-info " id="btnRapport">
                                     <i class="fas fa-edit"></i> 
                                 </a>
+                                
+                                {% endif %}
+                                 
                                 {% if evenement.imageName %}
                                         {% set extension = evenement.imageName|split('.')|last|lower %}
                                         
@@ -167,6 +190,8 @@
 
                                 </td>
                             </tr>
+                            </tr>
+                            
                         </tbody>
                     </table>
               </div>
@@ -197,7 +222,8 @@
                                 <tr>
                                     <th>Nom</th>
                                     <th>Prenom</th>
-                                    <th>Pervice</th>
+                                    <th>Service</th>
+                                    <th>Fonction</th>
                                     <th>Lieu d'emploi</th>
                                     <th></th>
                                     
@@ -210,6 +236,7 @@
                                     <td>{{ agent.nom }}</td>
                                     <td>{{ agent.prenom }}</td>
                                     <td>{{ agent.service }}</td>
+                                    <td>{{ agent.fonction }}</td>
                                     <td>{{ agent.lienEmpl }}</td>
                                     <td>
                                     <a href="{{ path('agent_mission_pdf', {'evenementId': evenement.id, 'agentId': agent.id}) }}" 
@@ -360,8 +387,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Modifier l'Assurance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="editModalLabel">Ajout du Rapport de fin de mission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-window-close" aria-hidden="true"></i></button>
                 </div>
                 <div class="modal-body">
                     <div id="editEvenementRapportForm"></div> {# Le formulaire sera chargé ici #}
@@ -561,6 +588,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const btnReliquat = document.querySelector('#btnReliquat');
+    if (btnReliquat) {
+        btnReliquat.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert("La mission n'est encore finalisée pour le moment !");
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnReliquat = document.querySelector('#btnRapport');
+    if (btnReliquat) {
+        btnReliquat.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert("La mission n'est encore finalisée pour le moment !");
+        });
+    }
+});
 
 
 

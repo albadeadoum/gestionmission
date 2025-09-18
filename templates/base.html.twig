@@ -43,10 +43,19 @@
         font-size: 16px; /* ajustez la taille de police selon vos besoins */
         }
 
-
-
-body {
+        body {
             zoom: 0.8; /* Réduction à 80 % */
+        }
+        #example1 {
+        table-layout: fixed; /* important pour que les widths du colgroup soient respectées */
+        }
+
+        #example1 td.wrap-text {
+        white-space: normal !important;
+        overflow-wrap: anywhere;    /* casse aussi les longs mots/URL */
+        word-wrap: break-word;      /* compat */
+        max-width: 200px;           /* ajuste selon besoin */
+        text-align: left;           /* optionnel */
         }
         
 
@@ -341,6 +350,15 @@ myModal.addEventListener('shown.bs.modal', () => {
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ path('app_chauffeur_index') }}" class="nav-link">
+                       <i class="fa-solid fa-user"></i> <i class="fa-solid fa-car"></i>
+                        <p style="font-size: 15px; font-weight: bold;">
+                            Chauffeurs
+                        </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ path('app_vehicule_index') }}" class="nav-link">
                        <i class="fa-solid fa-car"></i>
                         <p style="font-size: 15px; font-weight: bold;">
@@ -359,14 +377,7 @@ myModal.addEventListener('shown.bs.modal', () => {
                     </li>
 
 
-                    <li class="nav-item">
-                        <a href="{{ path('app_chauffeur_index') }}" class="nav-link">
-                       <i class="fa-solid fa-user"></i> <i class="fa-solid fa-car"></i>
-                        <p style="font-size: 15px; font-weight: bold;">
-                            Chauffeurs
-                        </p>
-                        </a>
-                    </li>
+                    
                    
                     {#<li class="nav-item">
                         <a href="{{ path('app_carburant_index') }}" class="nav-link">
