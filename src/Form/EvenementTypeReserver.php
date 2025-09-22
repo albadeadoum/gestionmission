@@ -20,123 +20,128 @@ use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType as TypeDateType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use App\Entity\Mission;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\CallbackTransformer;
 
 
 class EvenementTypeReserver extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('Vehicule', EntityType::class, ['class' => Vehicule::class,
-            'placeholder' => 'Choisissez un Vehicule',
-            'attr' => [
-                'class' => 'form-control',
-                'data-live-search' => 'true',
-                ],
-                'label' => 'Vehicule libre',
-                'required' => false, // <-- le champ n'est plus obligatoire
-                'constraints' => [
-                    new VehiculeDisponibilite(),
-                ],
-            ])
-            ->add('Chauffeur' , EntityType::class, ['class' => Chauffeur::class,
-            'placeholder' => 'Choisissez un Chauffeur',
-            'attr' => [
-                'class' => 'form-control',
-                'data-live-search' => 'true',
-                'label' => 'Chauffeur libre',
-                ],
-                'required' => false, // <-- le champ n'est plus obligatoire
-                'constraints' => [
-                    new ChauffeurDisponibilite(),
-                ],
-            ])
-            ->add('titre', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'minlength' => '2',
-                    'maxlength' => '50'
-                ],
-                'label' => 'Objet de la mission',
-                'label_attr' => [
-                    'class' => 'form-label mt-4'
-                ],
-                'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 50]),
-                    new Assert\NotBlank()
-                ]
-            ])
-            ->add('debut', TypeDateType::class , array(
-                'required' => true,
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control input-inline datetimepicker',
-                    'data-provide' => 'datetimepicker',
-                    'html5' => false,
-                ],
-                'label' => 'date début'
-                ))
-            ->add('fin', TypeDateType::class , array(
-                'required' => true,
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control input-inline datetimepicker',
-                    'data-provide' => 'datetimepicker',
-                    'html5' => false,
-                ],
-                'label' => 'Date fin'
-                ))
-                ->add('Destination', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'minlength' => '2',
-                    'maxlength' => '500'
-                ],
-                'label' => 'Destination',
-                'label_attr' => [
-                    'class' => 'form-label mt-4'
-                ],
-                'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 255]),
-                    new Assert\NotBlank()
-                ]
-            ])
+        $isFromMission = $options['from_mission'] ?? false;
 
-            ->add('Bailleur', EntityType::class, ['class' => Bailleur::class,
-            'placeholder' => 'Choisissez un Bailleur ',
-            'attr' => [
-                'class' => 'form-control',
-                'data-live-search' => 'true',
-                ],
-                'label' => 'Bailleur de financement',
-                
+        $builder
+             ->add('Destination', TextType::class, [
+                'attr' => ['class' => 'form-control', 'minlength' => '2', 'maxlength' => '500'],
+                'label' => 'Axe-Destination',
+                'constraints' => [new Assert\Length(['min' => 2, 'max' => 255]), new Assert\NotBlank()]
             ])
             
-            ->add('description', TextareaType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 3
-                ],
-                'label' => 'Description',
-                'label_attr' => [
-                    'class' => 'form-label mt-4'
-                ],
-                'constraints' => [
-                    new Assert\Length(['min' => 2, 'max' => 500]),
-                    new Assert\NotBlank()
-                ]
+            ->add('debut', TypeDateType::class, [
+                'required' => true,
+                'widget' => 'single_text',
+                'attr' => ['class' => 'form-control input-inline datetimepicker'],
+                'label' => 'Date début'
             ])
-            ->add('background_color', ColorType::class , [ 'label' => 'Arrière plan........' , 'data' => '#3FF11C'])
-            ->add('border_color', ColorType::class , [ 'label' => 'Bordure couleur..', 'data' => '#000000'])
-            ->add('text_color', ColorType::class , [ 'label' => 'Text couleur........', ])
+            ->add('fin', TypeDateType::class, [
+                'required' => true,
+                'widget' => 'single_text',
+                'attr' => ['class' => 'form-control input-inline datetimepicker'],
+                'label' => 'Date fin'
+            ])
            
+            ->add('description', TextareaType::class, [
+                'attr' => ['class' => 'form-control', 'rows' => 3],
+                'label' => 'Description',
+                'required' => false,
+                'constraints' => [new Assert\Length(['min' => 2, 'max' => 500])]
+            ])
+            // Dans votre buildForm()
+            ->add('background_color', HiddenType::class, [
+                'data' => '#3FF11C',
+                'empty_data' => '#3FF11C'
+            ])
+            ->add('border_color', HiddenType::class, [
+                'data' => '#000000', 
+                'empty_data' => '#000000'
+            ])
+            ->add('text_color', HiddenType::class, [
+                'empty_data' => '#000000' // ou la valeur par défaut souhaitée
+            ])
         ;
+
+        // ✅ Ajouter titre + bailleur uniquement si on n’est pas dans une mission
+        if (!$isFromMission) {
+            $builder
+                ->add('titre', TextType::class, [
+                    'attr' => ['class' => 'form-control', 'minlength' => '2', 'maxlength' => '50'],
+                    'label' => 'Objet de la mission',
+                    'constraints' => [new Assert\Length(['min' => 2, 'max' => 50]), new Assert\NotBlank()]
+                ])
+                ->add('Bailleur', EntityType::class, [
+                    'class' => Bailleur::class,
+                    'placeholder' => 'Choisissez un Bailleur',
+                    'attr' => ['class' => 'form-control', 'data-live-search' => 'true'],
+                    'label' => 'Bailleur de financement'
+                ]);
+        }
+    
+
+     // ✅ Ajouter chauffeur et véhicule uniquement si mission est "national"
+        $formModifier = function ($form, ?Mission $mission) {
+            if ($mission && $mission->getType() === 'NATIONAL') {
+                $form->add('Vehicule', EntityType::class, [
+                    'class' => Vehicule::class,
+                    'placeholder' => 'Choisissez un Vehicule',
+                    'attr' => ['class' => 'form-control', 'data-live-search' => 'true'],
+                    'label' => 'Vehicule libre',
+                    'required' => false,
+                    'constraints' => [new VehiculeDisponibilite()],
+                ]);
+
+                $form->add('Chauffeur', EntityType::class, [
+                    'class' => Chauffeur::class,
+                    'placeholder' => 'Choisissez un Chauffeur',
+                    'attr' => ['class' => 'form-control', 'data-live-search' => 'true'],
+                    'label' => 'Chauffeur libre',
+                    'required' => false,
+                    'constraints' => [new ChauffeurDisponibilite()],
+                ]);
+            }
+        };
+
+        // Cas édition : mission déjà connue
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($formModifier) {
+            $evenement = $event->getData();
+            $form = $event->getForm();
+
+            if ($evenement && $evenement->getMission()) {
+                $formModifier($form, $evenement->getMission());
+            }
+        });
+
+        // Cas création : quand mission choisie
+        if ($builder->has('mission')) {
+            $builder->get('mission')->addEventListener(
+                FormEvents::POST_SUBMIT,
+                function (FormEvent $event) use ($formModifier) {
+                    $mission = $event->getForm()->getData();
+                    $formModifier($event->getForm()->getParent(), $mission);
+                }
+            );
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Evenement::class,
+            'from_mission' => false, // par défaut non
         ]);
     }
+
 }

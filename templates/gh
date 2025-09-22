@@ -2,3 +2,7 @@
 -date fin affectation
 -assurance double dans la meme periode 
 -etat des vehicule en service et hors service 
+- la distation doit etre insert 
+{mision axe et menbre et vehicule}
+- option pour ajouter un agent adns la base d'ajout des agenta une mission
+- bouton met imprime la liste globale

@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Evenement;
 
 class ForVehiculeController extends AbstractController
 {
@@ -60,14 +61,35 @@ class ForVehiculeController extends AbstractController
             'pieces'=> $piece,
         ]);
     }
-    #[Route('/for/agent/evenement/{id}', name: 'app_for_agent_evenement')]
-    public function indexforagent(EvenementRepository $evenement , int $id, EntityManagerInterface $entityManager): Response
-    {
-        $evenements = $evenement->findBy(['agents' => $id]);
+   #[Route('/for/agent/evenement/{id}', name: 'app_for_agent_evenement')]
+    public function indexforagent(
+        int $id,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Vérifier que l'agent existe
+        $agent = $entityManager->getRepository(Agent::class)->find($id);
+        if (!$agent) {
+            throw $this->createNotFoundException("Agent introuvable !");
+        }
+
+        // Récupération des événements selon le type de relation
+        $evenements = $entityManager->getRepository(Evenement::class)
+            ->createQueryBuilder('e')
+            ->leftJoin('e.agents', 'a')  // fonctionne pour ManyToOne et ManyToMany
+            ->addSelect('a')
+            ->where('a.id = :id')
+            ->setParameter('id', $id)
+            ->orderBy('e.debut', 'DESC')
+            ->getQuery()
+            ->getResult();
+
         return $this->render('for/agent.html.twig', [
-            'evenements'=> $evenements,
+            'agent'      => $agent,
+            'evenements' => $evenements,
         ]);
     }
+
+
     /*#[Route('/for/vehicule', name: 'app_for_vehicule')]
     public function index(): Response
     {

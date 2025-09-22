@@ -39,8 +39,19 @@
          </div>
     </div>#}
 
+<figure style="font-size: 14pt;">
+  <blockquote class="blockquote" style="font-size: 20pt;">
+    <h3>Objet: {{ evenement.titre }}  </h3>
+  </blockquote>
+  <figcaption class="blockquote-footer">
+        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }}</cite>
+    </figcaption>
+    <figcaption class="blockquote-footer">
+        Bailleur: <cite title="Source Title">{{ evenement.mission.Bailleur }}</cite>
+           
+    </figcaption>
+</figure>
 
-<h2>{{ evenement.titre }}  </h2>
 <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
@@ -603,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnReliquat) {
         btnReliquat.addEventListener('click', function(e) {
             e.preventDefault();
-            alert("La mission n'est encore finalisée pour le moment !");
+            alert("La mission n'est encore fini pour le moment !");
         });
     }
 });

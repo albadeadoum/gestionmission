@@ -27,8 +27,8 @@
                             <tr>
                                 <td>{{ bailleur.id }}</td>
                                 <td>{{ bailleur.nom }}</td>
-                                <td>{{ bailleur.tauxAg  }} FCFA</td>
-                                <td>{{ bailleur.tauxOx }} FCFA</td>
+                                <td>{{ bailleur.tauxAg|number_format(0, ',', ' ')}} FCFA</td>
+                                <td>{{ bailleur.tauxOx|number_format(0, ',', ' ')}} FCFA</td>
                                 <td>
                                     {#<a href="{{ path('app_bailleur_show', {'id': bailleur.id}) }}">show</a>
                                     <a href="{{ path('app_bailleur_edit', {'id': bailleur.id}) }}">edit</a>#}

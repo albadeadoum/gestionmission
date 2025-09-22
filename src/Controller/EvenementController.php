@@ -17,7 +17,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repository\AgentRepository;
 use DateTime;
-use App\Entity\Agent; 
+use App\Entity\Agent;
+use App\Entity\Mission;
+ 
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -62,6 +64,17 @@ class EvenementController extends AbstractController
                 return $this->redirectToRoute('app_evenement_index');
             }
         }
+
+        // 🚀 Ajout du cas formulaire soumis mais invalide
+    if ($form->isSubmitted() && !$form->isValid()) {
+        return $this->render('evenement/index.html.twig', [
+            'evenements' => $mission->getAxe(),
+            'evenement' => $evenement,
+            'form' => $form->createView(),
+            'mission' => $mission,
+            'openContactModal' => true, // 🚀 modal reste ouvert avec erreurs
+        ]);
+    }
         return $this->render('evenement/index.html.twig', [
             'evenements' => $evenementRepository->findAll(),
             'evenement' => $evenement,
@@ -164,7 +177,12 @@ class EvenementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $evenementRepository->save($evenement, true);
 
-            return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
+            // Récupération de la mission liée
+            $mission = $evenement->getMission();
+
+            return $this->redirectToRoute('app_for_mission_evenement', [
+                'id' => $mission->getId(),
+            ]);
         }
 
         return $this->renderForm('evenement/edit.html.twig', [
@@ -172,6 +190,7 @@ class EvenementController extends AbstractController
             'form' => $form,
         ]);
     }
+
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_evenement_delete', methods: ['POST'])]
     public function delete(Request $request, Evenement $evenement, EvenementRepository $evenementRepository): Response
@@ -291,6 +310,73 @@ class EvenementController extends AbstractController
             'success' => false,
             'message' => 'Requête invalide'
         ], Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route('/mission/{id}', name: 'app_for_mission_evenement', methods: ['GET', 'POST'])]
+    public function forMission(
+        Request $request,
+        Mission $mission,
+        EvenementRepository $evenementRepository,
+        SessionInterface $session
+    ): Response {
+        $evenement = new Evenement();
+        $evenement->setMission($mission);
+        $evenement->setTitre($mission->getObjet()); // hérite de la mission
+        $evenement->setBailleur($mission->getBailleur()); // hérite du bailleur
+
+        $form = $this->createForm(EvenementTypeReserver::class, $evenement, [
+            'from_mission' => true, // enlève les champs inutiles
+            
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $debut = $evenement->getDebut();
+            $fin = $evenement->getFin();
+
+            $vehicule = $evenement->getVehicule();
+            $chauffeur = $evenement->getChauffeur();
+
+            if (
+                !$evenementRepository->isVehiculeAvailable($vehicule, $debut, $fin) ||
+                !$evenementRepository->isChauffeurAvailable($chauffeur, $debut, $fin)
+            ) {
+                $session->getFlashBag()->add('error', 'Le véhicule ou le chauffeur n\'est pas disponible aux dates sélectionnées.');
+
+                return $this->render('evenement/axe_index.html.twig', [
+                    'evenements' => $mission->getAxe(),
+                    'evenement' => $evenement,
+                    'form' => $form->createView(),
+                    'mission' => $mission,
+                    'openContactModal' => true,
+                ]);
+            } else {
+                $evenementRepository->save($evenement, true);
+
+                $session->getFlashBag()->add('success', 'L\'événement a été créé avec succès.');
+
+                return $this->redirectToRoute('app_for_mission_evenement', ['id' => $mission->getId()]);
+            }
+        }
+
+        // 🚀 Ajout du cas formulaire soumis mais invalide
+    if ($form->isSubmitted() && !$form->isValid()) {
+        return $this->render('evenement/axe_index.html.twig', [
+            'evenements' => $mission->getAxe(),
+            'evenement' => $evenement,
+            'form' => $form->createView(),
+            'mission' => $mission,
+            'openContactModal' => true, // 🚀 modal reste ouvert avec erreurs
+        ]);
+    }
+
+        return $this->render('evenement/axe_index.html.twig', [
+            'evenements' => $mission->getAxe(),
+            'evenement' => $evenement,
+            'form' => $form->createView(),
+            'mission' => $mission,
+            'openContactModal' => false,
+        ]);
     }
 
     

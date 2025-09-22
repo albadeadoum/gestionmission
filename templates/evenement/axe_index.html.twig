@@ -3,26 +3,43 @@
 {% block title %}{% endblock %}
 
 {% block body %}
-   <div class="row align-items-start">
+<div class="row align-items-start">
        <div class="col">
+    <figure style="font-size: 14pt;">
+    <blockquote class="blockquote" style="font-size: 20pt;">
+        <h3>Objet: {{ evenement.titre }}  
+        {% if is_granted('ROLE_ADMIN') %}
+                 <a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary">
+                 <i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning">
+                 <i class="fa-regular fa-calendar-plus"></i></a> 
+                 {% endif %} 
+        </h3>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }}</cite>
+    </figcaption>
+    <figcaption class="blockquote-footer">
+        Bailleur: <cite title="Source Title">{{ evenement.mission.Bailleur }}</cite>
+           
+    </figcaption>
+    
+    </figure>
+   
             <!-- Form Element sizes -->
-            <div class="card card-secondary">
-              <div class="card-header">
-                <h3 class="card-title">Mission</h3> {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
-                
-              </div>
+                 
               <div class="card-body">
 
     <table class="table table-striped table-bordered text-center"  id="example1" >
         <thead>
             <tr>
-                <th>Mission</th>
-                <th>Axe</th>
+                
+                <th></th>
+                <th>Objet</th>
                 <th>Vehicule</th>
                 <th>Chauffeur</th>
                 <th>Début</th>
                 <th>Fin</th>
-                <th>Bailleur</th>
+                {#<th>Bailleur</th>#}
                 <th>Description</th>
                 <th>Destination</th>
                 {#<th>Dotation</th>
@@ -43,17 +60,18 @@
                     {% set reservations = [] %}
                     {% set enCours = [] %}
                     {% set finis = [] %}
-                <td>{{ evenement.titre }}</td>
+                
                 <td data-order="{% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}1
                         {% elseif evenement.fin.format("Y-m-d") <= currentDate and evenement.imageName is empty %}2
                         {% elseif evenement.fin.format("Y-m-d") > currentDate %}3
                         {% else %}4
                         {% endif %}">
                     
+                    
                     {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
                             <span class="status btn btn-success">{{ evenement.destination }}--En cours</span>
                     {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
-                                    <span class="status btn btn-warning">{{ evenement.destination }}--Provisoire </span>
+                            <span class="status btn btn-warning">{{ evenement.destination }}--Provisoire </span>
                     {% else %}
                     {% if evenement.imageName is empty %}
                             <span class="status btn btn-secondary">{{ evenement.destination }}--En attente de finalisation</span>
@@ -62,12 +80,12 @@
                     {% endif %}
                     {% endif %}
                 </td>
-                
+                <td>{{ evenement.titre }}</td>
                 <td>{{ evenement.Vehicule }}</td>
                 <td>{{ evenement.Chauffeur }}</td>
                 <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
                 <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
-                <td>{{ evenement.bailleur }}</td>
+                {#<td>{{ evenement.bailleur }}</td>#}
                 <td>{{ evenement.description }}</td>
                 <td>{{ evenement.Destination }}</td>
                 {#<td>{{ evenement.Dotation }}</td>
@@ -114,7 +132,7 @@
             <div class="modal-body">
                 <!-- Formulaire Agent -->
                 {{ form_start(form) }}
-                   {% if form.vehicule is defined %}
+                    {% if form.vehicule is defined %}
                         <div class="form-group">
                             {{ form_label(form.vehicule, 'Véhicule libre') }}
                             {{ form_widget(form.vehicule, { 'attr': { 'class': 'form-control ' } }) }}
@@ -129,6 +147,7 @@
                             {{ form_errors(form.chauffeur) }}
                         </div>
                     {% endif %}
+
 
                     
 

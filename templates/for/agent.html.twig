@@ -1,96 +1,91 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Evenement index{% endblock %}
+{% block title %}Missions de {{ agent.nom }} {{ agent.prenom }}{% endblock %}
 
 {% block body %}
-   <div class="row align-items-start">
-       <div class="col">
-            <!-- Form Element sizes -->
-            <div class="card card-secondary">
-              <div class="card-header">
-                {% set lastAgent = null %}
-                {% for evenement in evenements %}
-                    {% set currentAgent = evenement.agents %}
-                    {% if lastAgent != currentAgent %}
-                        <h3 class="card-title">{{ currentAgent }} Liste des missions effetuée</h3>
-                        {% set lastAgent = currentAgent %}
-                    {% endif %}
-                {% endfor %} 
-                {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('app_evenement_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
-                
-              </div>
-              <div class="card-body">
-
-    <table class="table table-striped"  id="" >
-        <thead>
-            <tr>
-                <th>Statut</th>
-                <th>Titre</th>
-                <th>Chauffeur</th>
-                <th>Début</th>
-                <th>Fin</th>
-                <th>Description</th>
-                <th>Jours</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% set currentDate = "now"|date("Y-m-d") %}
-
-        {% set reservations = [] %}
-        {% set enCours = [] %}
-        {% set finis = [] %}
-
-        {% for evenement in evenements %}
-            {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
-                {% set enCours = enCours|merge([evenement]) %}
-            {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
-                {% set reservations = reservations|merge([evenement]) %}
-            {% else %}
-                {% set finis = finis|merge([evenement]) %}
-            {% endif %}
-        {% endfor %}
-
-        {% set sortedEvenements = reservations|merge(enCours)|merge(finis) %}
-
-        {% for evenement in sortedEvenements %}
-            <tr>
-                <td>
-                    {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
-                       <span class="status btn btn-success">En cours</span>
-                    {% elseif  evenement.fin.format("Y-m-d") > currentDate %}
-                       <span class="status btn btn-warning">Réserver</span>
-                    {% else %}
-                       <span class="status btn btn-danger">Finie</span>
-                    {% endif %}
-                </td>
-                <td>{{ evenement.titre }}</td>
-                <td>{{ evenement.Chauffeur }}</td>
-                <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
-                <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '' }}</td>
-                <td>{{ evenement.description }}</td>
-                <td>
-                {% if evenement.debut and evenement.fin %}
-                {# Calculate the date difference in days #}
-                {% set debutTimestamp = evenement.debut.timestamp() %}
-                {% set finTimestamp = evenement.fin.timestamp() %}
-                {% set duration = ((finTimestamp - debutTimestamp) / 86400) | round(0, 'floor') %}
-                {{ duration }}
-            {% else %}
-                N/A
-            {% endif %} Jours
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="row align-items-start">
+    <div class="col">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ agent.nom }} {{ agent.prenom }} - Liste des missions effectuées
+                </h3>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_evenement_new') }}" style="float: right;" class="btn btn-primary">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </a>
+                {% endif %}
             </div>
-              <!-- /.card-body -->
-         </div>
-    </div>
 
-    
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Statut</th>
+                            <th>Titre</th>
+                            <th>Début</th>
+                            <th>Fin</th>
+                            <th>Description</th>
+                            <th>Durée</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set currentDate = "now"|date("Y-m-d") %}
+
+                        {% for evenement in evenements %}
+                            {% set statut = '' %}
+                            {% if evenement.debut and evenement.fin %}
+                                {% set debut = evenement.debut|date("Y-m-d") %}
+                                {% set fin = evenement.fin|date("Y-m-d") %}
+                                {% if debut <= currentDate and currentDate <= fin %}
+                                    {% set statut = 'En cours' %}
+                                {% elseif fin > currentDate %}
+                                    {% set statut = 'Réservé' %}
+                                {% else %}
+                                    {% set statut = 'Fini' %}
+                                {% endif %}
+                            {% endif %}
+
+                            <tr>
+                                <td>
+                                    {% if statut == 'En cours' %}
+                                        <span class="btn btn-success">{{ statut }}</span>
+                                    {% elseif statut == 'Réservé' %}
+                                        <span class="btn btn-warning">{{ statut }}</span>
+                                    {% else %}
+                                        <span class="btn btn-danger">{{ statut }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ evenement.titre }}</td>
+                                <td>
+                                    {% if evenement.Chauffeur is defined and evenement.Chauffeur %}
+                                        {{ evenement.Chauffeur.nom ~ ' ' ~ evenement.Chauffeur.prenom }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '-' }}</td>
+                                <td>{{ evenement.fin ? evenement.fin|date('d-m-Y') : '-' }}</td>
+                                <td>
+                                    {% if evenement.debut and evenement.fin %}
+                                        {% set duration = ((evenement.fin.timestamp() - evenement.debut.timestamp()) / 86400) | round(0, 'floor') %}
+                                        {{ duration }} jours
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td></td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">Aucune mission trouvée</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

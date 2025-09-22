@@ -1,6 +1,364 @@
 <!doctype html>
 <html lang="fr">
 <head>
+
+  <meta charset="utf-8"/>
+  
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+
+    body {
+      font-family: 'Calibri', serif;
+      font-size: 12pt;
+      line-height: 1.4;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      margin: 2px 0;
+    }
+
+    .document-title {
+      text-align: center;
+      font-size: 12pt;
+      font-weight: bold;
+      
+      margin: 15px 0;
+
+            border: 1px solid #000;
+            padding: 8px 4px;
+            
+            color: #000;
+            background-color: #bfbfbf;
+            margin: 5px 0 10px 0;
+    }
+
+    .document-info {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+
+    .field-group {
+      margin: 8px 0;
+      font-size: 11pt;
+    }
+
+    .field-label {
+      display: inline-block;
+      width: 200px;
+      font-weight: bold;
+      
+    }
+
+    .field-value {
+      display: inline-block;
+      min-width: 200px;
+      border-bottom: 1px dotted #000;
+    }
+
+    .signature {
+      margin-top: 50px;
+      text-align: right;
+    }
+
+    .signature p {
+      margin: 5px 0;
+    }
+
+    .signature .underline {
+      text-decoration: underline;
+    }
+
+    .agent {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2px 0;
+      font-size: 9pt;
+    }
+
+    .agent th, .agent td {
+      border: 1px solid #000;
+      padding: 1px;
+      text-align: left;
+    }
+
+    .table-title {
+      text-align: center;
+      font-weight: bold;
+      text-decoration: underline;
+      margin: 20px 0 10px 0;
+    }
+
+    .deplacement-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 25px 0;
+    }
+
+    .deplacement-table td {
+      border: 1px solid #000;
+      width: 50%;
+      vertical-align: top;
+      padding: 8px;
+      height: 90px;
+    }
+
+    .footer {
+      font-size: 8pt;
+      text-align: center;
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      margin-top: 30px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <!-- EN-TÊTE -->
+  <div class="header">
+    <table>
+      <tr>
+        <td style="width: 40%; vertical-align: middle;">
+          <div class="header-logo">
+            <img src="{{ absolute_url(asset('ins.jpg')) }}" alt="Logo INS Niger" style="width: 120px; height: auto; margin: 5px 0;">
+          </div>
+        </td>
+        <td style="width: 60%; vertical-align: middle;" class="header-text">
+          <p>RÉPUBLIQUE DU NIGER</p>
+          <p style="font-weight: bold;">Fraternité - Travail - Progrès</p>
+          <p style="font-weight: bold;">MINISTÈRE DE L'ÉCONOMIE ET DES FINANCES</p>
+          <p style="font-weight: bold;">INSTITUT NATIONAL DE LA STATISTIQUE</p>
+          <p style="font-size: 11pt;">Établissement Public à Caractère Administratif</p>
+          <p style="font-weight: bold;">BUREAU CENTRAL DE RECENSEMENT</p>
+          <p style="font-size: 11pt;">Unité Des Ressources Humaines</p>
+        </td>
+      </tr>
+    </table>
+    <div class="bottom-image">
+      <img src="{{ absolute_url(asset('im2.png')) }}" alt="Logo secondaire INS Niger">
+    </div>
+    <hr class="divider">
+  </div>
+
+  <!-- TITRE -->
+  <h1 class="document-title">ORDRE DE DÉPLACEMENT</h1>
+
+  <div class="document-info">
+    <p>N° _____________/ME/F/INS/BCR/URH</p>
+  </div>
+
+  <!-- INFORMATIONS -->
+  <div class="field-group">
+    <span style="display: inline-block; width: 400px; font-weight: bold;">MEMBRES DE LA MISSION</span>
+  </div>
+
+  <table class="agent" >
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th >NOM</th>
+        <th >PRÉNOM</th>
+        <th>FONCTION</th>
+        <th >SERVICE EMPLOYEUR</th>
+        <th>LIEU D’EMPLOI</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for agent in agents %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ agent.nom }}</td>
+          <td>{{ agent.prenom }}</td>
+          <td>{{ agent.service }}</td>
+          <td>{{ agent.lienEmpl }}</td>
+          <td>{{ agent.lienEmpl }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Aucun membre assigné</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="field-group">
+    <span class="field-label">OBJET DU DÉPLACEMENT :</span>
+    <span class="field-value">{{ objet }}</span>
+  </div>
+
+  <div class="field-group">
+    <span class="field-label">DESTINATION :</span>
+    <span class="field-value">{{ destination }}</span>
+  </div>
+
+  <div class="field-group">
+    <span class="field-label">DATE DE DÉPART :</span>
+    <span class="field-value">{{ debut }}</span>
+  </div>
+
+  <div class="field-group">
+    <span class="field-label">DATE DE RETOUR :</span>
+    <span class="field-value">{{ fin }}</span>
+  </div>
+
+  <div class="field-group">
+    <span class="field-label">MOYEN DE TRANSPORT :</span>
+    <span class="field-value"></span>
+  </div>
+
+  <div class="field-group">
+    <span class="field-label">IMPUTATION :</span>
+    <span class="field-value"></span>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div class="signature">
+    <p>Fait à Niamey, le {{ "now"|date("d/m/Y") }}</p>
+    <p style="margin-top: 5px; font-weight: bold;">
+      <span class="underline">Le Directeur Général p.i</span>
+    </p>
+    <p style="margin-top: 60px;"><span class="underline"></span></p>
+    <p style="margin-top: 20px; font-weight: bold;">
+      <span class="underline">Souleymane ALZOUMA</span>
+    </p>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <div class="footer">
+    <p>
+      182, rue de la Sirba - BP 13416 Niamey - NIGER • Tél. : (227) 20 72 35 60 • 
+      Fax : (227) 20 72 21 74 • http://www.ins.ne • E-mail : ins@ins.ne
+    </p>
+    <img src="{{ absolute_url(asset('im3.png')) }}" alt="Logo" style="width: 60px; height: auto; float: left;">
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page-break"></div>
+
+  <table>
+                <tr>
+                    <td style="width: 40%; vertical-align: middle;">
+                        <div class="header-logo"><img src="{{ absolute_url(asset('ins.jpg')) }}" alt="Logo INS Niger" style="width: 120px; height: auto; margin: 5px 0;"></div>
+                    </td>
+                    <td style="width: 60%; vertical-align: middle;" class="header-text">
+                        <p style="font-size: 12pt; margin: 3px 0;">RÉPUBLIQUE DU NIGER</p>
+                        <p style="font-size: 12pt; font-weight: bold; margin: 3px 0;">Fraternité - Travail - Progrès</p>
+                        <p style="font-size: 12pt; font-weight: bold; margin: 3px 0;">MINISTÈRE DE L'ECONOMIE ET DES FINANCES</p>
+                        <p style="font-size: 12pt; font-weight: bold; margin: 3px 0;">INSTITUT NATIONAL DE LA STATISTIQUE</p>
+                        <p style="font-size: 11pt; margin: 3px 0;">Établissement Public à Caractère Administratif</p>
+                        <p style="font-size: 12pt; font-weight: bold; margin: 3px 0;">BUREAU CENTRAL DE RECENSEMENT</p>
+                        <p style="font-size: 11pt; margin: 3px 0;">Unité Des Ressources Humaines</p>
+                    </td>
+                </tr>
+            </table>
+            <div class="bottom-image">
+            <img src="{{ absolute_url(asset('im2.png')) }}" alt="Logo secondaire INS Niger">
+        </div>
+            <hr class="divider">
+
+<h3 class="text-center underline" style="text-align: center; ">FEUILLE DE DÉPLACEMENT</h3>
+        
+        <table class="deplacement-table">
+            <tr>
+                <td>
+                    <h3>Visas de départ</h3>
+                    <p>De.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+                <td>
+                    <h3>Visas d'arrivée</h3>
+                    <p>A.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+                <td>
+                    <p>A.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+                <td>
+                    <p>A.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+                <td>
+                    <p>A.........................................</p>
+                    <p>Le.........................................</p>
+                    <p>...................................heures</p>
+                </td>
+            </tr>
+        </table>
+
+  <!-- PIED DE PAGE -->
+  <div class="footer" style="padding: 5px 10px; font-size: 10px; ">
+    <p style="margin:0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        182, rue de la Sirba - BP 13416 Niamey - NIGER • Tél. : (227) 20 72 35 60 • 
+        Fax : (227) 20 72 21 74 • http://www.ins.ne • E-mail : ins@ins.ne
+    </p>
+    <img src="{{ absolute_url(asset('im3.png')) }}" alt="Logo" 
+         style="display: block; margin: 0; padding: 0; width: 60px;height: auto; float: left;">
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{#
+<!--
+
+<!doctype html>
+<html lang="fr">
+<head>
   <meta charset="utf-8">
   <style>
     body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
@@ -49,3 +407,6 @@
   </div>
 </body>
 </html>
+-->
+
+#}

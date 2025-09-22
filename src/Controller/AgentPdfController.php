@@ -245,6 +245,7 @@ class AgentPdfController extends AbstractController
             'date_today'   => (new \DateTime())->format('d/m/Y'),
             'totalMontantPayer'   => $totalMontantPayer * 0.9,
             'TotalEnLettre'   => $TotalEnLettre,
+            'totalMontantPayeragAgent'   => $totalMontantPayer,
         ];
 
         // Génération du PDF avec DomPDF
@@ -264,7 +265,7 @@ class AgentPdfController extends AbstractController
 
         return new Response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="ordre_mission_'.$chauffeurNom.'_'.$evenement->getId().'.pdf"',
+            'Content-Disposition' => 'inline; filename="etat_paiment_mission_'.'_'.$evenement->getTitre().'.pdf"',
         ]);
     }
 
@@ -330,6 +331,9 @@ class AgentPdfController extends AbstractController
 
         
         $TotalEnLettre = $numberTransformer->toWords($totalMontantPayer * 0.1);
+       $totalMontantPayeragavance = $totalMontantPayer * 0.9;
+
+
         // Préparation des données pour le template PDF
         $data = [
             'evenement'    => $evenement,
@@ -338,6 +342,8 @@ class AgentPdfController extends AbstractController
             'date_today'   => (new \DateTime())->format('d/m/Y'),
             'totalMontantPayer'   => $totalMontantPayer * 0.1,
             'TotalEnLettre'   => $TotalEnLettre,
+            'totalMontantPayeragAgent'   => $totalMontantPayer,
+            'totalMontantPayeragavance'   => $totalMontantPayeragavance,
         ];
 
         // Génération du PDF avec DomPDF
@@ -357,7 +363,7 @@ class AgentPdfController extends AbstractController
 
         return new Response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="ordre_mission_'.$chauffeurNom.'_'.$evenement->getId().'.pdf"',
+            'Content-Disposition' => 'inline; filename="etat_paiement_mission'.'_'.$evenement->getTitre().'.pdf"',
         ]);
     }
 

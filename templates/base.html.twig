@@ -32,7 +32,7 @@
         
         /* Ajoutez d'autres sélecteurs et règles CSS pour modifier la taille de police d'autres éléments */
         body {
-        font-size: 12px;
+        font-size: 13px;
         }
         .btn {
         /* styles pour le bouton */
@@ -56,6 +56,18 @@
         word-wrap: break-word;      /* compat */
         max-width: 200px;           /* ajuste selon besoin */
         text-align: left;           /* optionnel */
+        }
+
+        /* Réduire la taille des liens <a> et des boutons */
+        a.btn, button.btn {
+            font-size: 12px;       /* taille du texte dans le bouton */
+            padding: 0.25rem 0.5rem; /* espace intérieur plus petit */
+        }
+
+        /* Réduire la taille des icônes Font Awesome dans les boutons */
+        a.btn i.fa, button.btn i.fa {
+            font-size: 14px; /* ou ce que tu veux */
+            vertical-align: middle; /* pour qu'elles restent alignées avec le texte */
         }
         
 
@@ -330,12 +342,20 @@ myModal.addEventListener('shown.bs.modal', () => {
                         </p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_mission_index') }}" class="nav-link">
+                       <i class="fa-regular fa-calendar-days"></i>
+                        <p style="font-size: 15px; font-weight: bold;">
+                            Missions 
+                        </p>
+                        </a>
+                    </li>
                     
                     <li class="nav-item">
                         <a href="{{ path('app_evenement_index') }}" class="nav-link">
                        <i class="fa-regular fa-calendar-days"></i>
                         <p style="font-size: 15px; font-weight: bold;">
-                            Missions 
+                            AXES
                         </p>
                         </a>
                     </li>

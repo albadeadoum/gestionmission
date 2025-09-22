@@ -28,12 +28,17 @@ class Bailleur
     
     #[ORM\OneToMany(mappedBy: 'Bailleur', targetEntity: Evenement::class)]
     private Collection $evenements;
+
+    #[ORM\OneToMany(mappedBy: 'bailleur', targetEntity: Mission::class)]
+    private Collection $missions;
+
     
     
 
     public function __construct()
     {
         $this->evenements = new ArrayCollection();
+        $this->missions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -111,6 +116,35 @@ class Bailleur
     public function __toString(): string
 {
     return $this->nom ?? ''; // ou la propriété qui contient le nom du bailleur
+}
+
+/**
+ * @return Collection<int, Mission>
+ */
+public function getMissions(): Collection
+{
+    return $this->missions;
+}
+
+public function addMission(Mission $mission): static
+{
+    if (!$this->missions->contains($mission)) {
+        $this->missions->add($mission);
+        $mission->setBailleur($this);
+    }
+
+    return $this;
+}
+
+public function removeMission(Mission $mission): static
+{
+    if ($this->missions->removeElement($mission)) {
+        if ($mission->getBailleur() === $this) {
+            $mission->setBailleur(null);
+        }
+    }
+
+    return $this;
 }
 
 }

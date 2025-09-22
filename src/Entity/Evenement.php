@@ -32,7 +32,7 @@ class Evenement
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $fin = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
@@ -91,6 +91,10 @@ class Evenement
 
      #[ORM\Column(nullable: true)]
      private ?\DateTimeImmutable $updatedAt = null;
+
+     #[ORM\ManyToOne(inversedBy: 'axe')]
+     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+     private ?Mission $mission = null;
 
     
     
@@ -410,6 +414,18 @@ class Evenement
     public function getImageName(): ?string
     {
         return $this->imageName;
+    }
+
+    public function getMission(): ?Mission
+    {
+        return $this->mission;
+    }
+
+    public function setMission(?Mission $mission): static
+    {
+        $this->mission = $mission;
+
+        return $this;
     }
 
 

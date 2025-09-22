@@ -74,7 +74,7 @@ class EveneType extends AbstractType
                 new Assert\NotBlank()
             ]
         ])
-        ->add('Dotation', ChoiceType::class, [
+        /*->add('Dotation', ChoiceType::class, [
             'placeholder' => 'Choisissez un statut',
             'attr' => [
                 'class' => 'form-control',
@@ -105,7 +105,7 @@ class EveneType extends AbstractType
         ->add('background_color', ColorType::class , [ 'label' => 'Arrière plan........'])
         ->add('border_color', ColorType::class , [ 'label' => 'Bordure couleur..'])
         ->add('text_color', ColorType::class , [ 'label' => 'Text couleur........', ])
-            /*->add('Vehicule')
+            ->add('Vehicule')
             ->add('Chauffeur')*/
         ;
     }
