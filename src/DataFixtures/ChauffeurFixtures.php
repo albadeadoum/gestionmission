@@ -17,7 +17,7 @@ class ChauffeurFixtures extends Fixture
             $chauffeur = new Chauffeur();
             $chauffeur->setNom($faker->lastName);
             $chauffeur->setPrenom($faker->firstName);
-            $chauffeur->setNumero($faker->numberBetween(1200, 2500));
+            $chauffeur->setNumero($faker->numberBetween(90000001, 95999999));
             $chauffeur->setAdress($faker->city);
 
             $manager->persist($chauffeur);

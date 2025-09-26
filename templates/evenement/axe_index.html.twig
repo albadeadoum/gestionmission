@@ -5,18 +5,19 @@
 {% block body %}
 <div class="row align-items-start">
        <div class="col">
-    <figure style="font-size: 14pt;">
-    <blockquote class="blockquote" style="font-size: 20pt;">
+    <figure style="font-size: 12pt;">
+    <blockquote class="blockquote" style="font-size: 16pt;">
         <h3>Objet: {{ evenement.titre }}  
         {% if is_granted('ROLE_ADMIN') %}
                  <a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary">
-                 <i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning">
-                 <i class="fa-regular fa-calendar-plus"></i></a> 
+                 <i class="fa-regular fa-calendar-plus"></i></a> {#<a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning">
+                 <i class="fa-regular fa-calendar-plus"></i></a> #}
                  {% endif %} 
         </h3>
+        
     </blockquote>
     <figcaption class="blockquote-footer">
-        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }}</cite>
+        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }} </cite> 
     </figcaption>
     <figcaption class="blockquote-footer">
         Bailleur: <cite title="Source Title">{{ evenement.mission.Bailleur }}</cite>
@@ -33,7 +34,7 @@
         <thead>
             <tr>
                 
-                <th></th>
+                <th>Axes</th>
                 <th>Objet</th>
                 <th>Vehicule</th>
                 <th>Chauffeur</th>

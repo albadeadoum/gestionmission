@@ -8,8 +8,8 @@
             <!-- Form Element sizes -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Mission</h3> {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
-                
+                <h3 class="card-title">Axes</h3>{# {% if is_granted('ROLE_ADMIN') %}<a  data-bs-toggle="modal" data-bs-target="#createEventModal" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> <a href="{{ path('app_evenement_new_reserver') }}" style="float: right;" class="btn btn-warning"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}
+                #}
               </div>
               <div class="card-body">
 
@@ -43,12 +43,12 @@
                     {% set reservations = [] %}
                     {% set enCours = [] %}
                     {% set finis = [] %}
-                <td>{{ evenement.titre }}</td>
                 <td data-order="{% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}1
                         {% elseif evenement.fin.format("Y-m-d") <= currentDate and evenement.imageName is empty %}2
                         {% elseif evenement.fin.format("Y-m-d") > currentDate %}3
                         {% else %}4
-                        {% endif %}">
+                        {% endif %}">{{ evenement.titre }}</td>
+                <td>
                     
                     {% if evenement.debut.format("Y-m-d") <= currentDate and currentDate <= evenement.fin.format("Y-m-d") %}
                             <span class="status btn btn-success">{{ evenement.destination }}--En cours</span>

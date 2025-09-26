@@ -12,7 +12,7 @@
                 {% for evenement in evenements %}
                     {% set currentVehicule = evenement.Vehicule %}
                     {% if lastVehicule != currentVehicule %}
-                        <h3 class="card-title">{{ currentVehicule }} Liste des missions effetuée</h3>
+                        <h3 class="card-title">{{ currentVehicule }} Liste des missions effetuée </h3>
                         {% set lastVehicule = currentVehicule %}
                     {% endif %}
                 {% endfor %} {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('app_evenement_new') }}" style="float: right;" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i></a> {% endif %}

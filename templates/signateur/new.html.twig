@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Signateur{% endblock %}
+
+{% block body %}
+    <h1>Create new Signateur</h1>
+
+    {{ include('signateur/_form.html.twig') }}
+
+    <a href="{{ path('app_signateur_index') }}">back to list</a>
+{% endblock %}

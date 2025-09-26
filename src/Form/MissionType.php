@@ -45,12 +45,12 @@ class MissionType extends AbstractType
                 ],
             ])
             ->add('type' , ChoiceType::class, [
-                'placeholder' => 'Choisissez el bailleur de financement',
+                'placeholder' => 'Type de la mission',
                 'attr' => [
                     'class' => 'form-control',
                     'data-live-search' => 'true',
                 ],
-                'label' => 'Bailleur de financement',
+                'label' => 'Choisissez LE Type de la mission',
                 'label_attr' => [
                     'class' => 'form-label mt-2'
                 ],

@@ -123,29 +123,7 @@ final class AssuranceController extends AbstractController
         ], Response::HTTP_BAD_REQUEST);
     }
 
-    /*#[Route('/{id}/delete', name: 'app_assurance_delete', methods: ['POST'])]
-    public function delete(Request $request, Assurance $assurance = null, EntityManagerInterface $entityManager): JsonResponse
-    {
-        // Vérifie si l'assurance existe
-        if (!$assurance) {
-            return new JsonResponse(['success' => false, 'message' => 'Assurance non trouvée'], Response::HTTP_NOT_FOUND);
-        }
-
-        // Vérifie la validité du token CSRF
-        if (!$this->isCsrfTokenValid('delete' . $assurance->getId(), $request->request->get('_token'))) {
-            return new JsonResponse(['success' => false, 'message' => 'Token CSRF invalide'], Response::HTTP_FORBIDDEN);
-        }
-
-        // Supprime l'assurance
-        try {
-            $entityManager->remove($assurance);
-            $entityManager->flush();
-            $this->redirectToRoute('app_carburant_index', [], Response::HTTP_SEE_OTHER);
-            return $this->redirectToRoute('app_assurance_index', [], Response::HTTP_SEE_OTHER);
-        } catch (\Exception $e) {
-            return new JsonResponse(['success' => false, 'message' => 'Erreur lors de la suppression de l\'assurance'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }*/
+   
 
     #[Route('/{id}/delete', name: 'app_assurance_delete', methods: ['POST'])]
     public function delete(Request $request, Assurance $assurance, AssuranceRepository $assuranceRepository): Response

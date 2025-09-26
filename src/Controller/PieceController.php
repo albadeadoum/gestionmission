@@ -111,31 +111,6 @@ class PieceController extends AbstractController
         ], Response::HTTP_BAD_REQUEST);
     }
 
-    /*#[IsGranted('ROLE_ADMIN')]
-    #[Route('/{id}/edit', name: 'app_piece_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Piece $piece, PieceRepository $pieceRepository): Response
-    {
-        $form = $this->createForm(PieceType::class, $piece);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $pieceRepository->save($piece, true);
-
-            // Si la requête est AJAX, renvoyer une réponse JSON
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => true]);
-            }
-
-            // Si ce n'est pas une requête AJAX, effectuer la redirection classique
-            return $this->redirectToRoute('app_piece_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        // Si la requête n'est pas une soumission AJAX, on affiche le formulaire normalement
-        return $this->renderForm('piece/edit.html.twig', [
-            'piece' => $piece,
-            'form' => $form,
-        ]);
-    }*/
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_piece_delete', methods: ['POST'])]

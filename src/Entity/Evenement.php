@@ -59,8 +59,7 @@ class Evenement
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $Destination = null;
 
-    #[ORM\OneToMany(mappedBy: 'mission', targetEntity: Carburant::class)]
-    private Collection $carburants;
+   
 
     #[ORM\OneToMany(mappedBy: 'mission', targetEntity: User::class)]
     private Collection $users;
@@ -95,6 +94,9 @@ class Evenement
      #[ORM\ManyToOne(inversedBy: 'axe')]
      #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
      private ?Mission $mission = null;
+
+     #[ORM\ManyToOne(inversedBy: 'mission')]
+     private ?Signateur $signateur = null;
 
     
     
@@ -266,23 +268,6 @@ class Evenement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Carburant>
-     */
-    public function getCarburants(): Collection
-    {
-        return $this->carburants;
-    }
-
-    public function addCarburant(Carburant $carburant): self
-    {
-        if (!$this->carburants->contains($carburant)) {
-            $this->carburants->add($carburant);
-            $carburant->setMission($this);
-        }
-
-        return $this;
-    }
 
     public function removeCarburant(Carburant $carburant): self
     {
@@ -424,6 +409,18 @@ class Evenement
     public function setMission(?Mission $mission): static
     {
         $this->mission = $mission;
+
+        return $this;
+    }
+
+    public function getSignateur(): ?Signateur
+    {
+        return $this->signateur;
+    }
+
+    public function setSignateur(?Signateur $signateur): static
+    {
+        $this->signateur = $signateur;
 
         return $this;
     }

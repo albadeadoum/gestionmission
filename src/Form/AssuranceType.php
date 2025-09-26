@@ -85,24 +85,6 @@ class AssuranceType extends AbstractType
             ]);
 
         
-
-           /* $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
-                $assurance = $event->getData();
-                $form = $event->getForm();
-            
-                if ($form->has('type')) {
-                    $type = $form->get('type')->getData();
-                    
-                    if ($type === 'vehicule') {
-                        $assurance->setMoto(null); // ✅ Supprime moto si un véhicule est sélectionné
-                    } elseif ($type === 'moto') {
-                        $assurance->setVehicule(null); // ✅ Supprime véhicule si une moto est sélectionnée
-                    } else {
-                        $assurance->setVehicule(null);
-                        $assurance->setMoto(null);
-                    }
-                }
-            });*/
             
     }
 

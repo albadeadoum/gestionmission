@@ -285,7 +285,7 @@ myModal.addEventListener('shown.bs.modal', () => {
 
 
         {% endblock %}
-
+    
         
     </head>
     
@@ -294,10 +294,10 @@ myModal.addEventListener('shown.bs.modal', () => {
 
             <!-- Navbar -->
         
-    
         {% block header %}
 			{% include "partials/_header.html.twig" %}
 		{% endblock %}
+        
          <!-- Main Sidebar Container -->
             <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:rgb(67, 76, 78){#154360#} ">
                 <!-- Brand Logo -->
@@ -313,7 +313,7 @@ myModal.addEventListener('shown.bs.modal', () => {
                     <img src="{{asset('LOGO_RGPH5-23.jpg')}}"  alt="User Image" style="width: 70px; height: auto;">
                     </div>
                     <div class="info">
-                    <a href="#" class="d-block" style="font-size: 30px;">INS NIGER</a>
+                    <a href="#" class="d-block" style="font-size: 30px;">BCR/INS </a>
                     </div>
                 </div>
 
@@ -353,7 +353,7 @@ myModal.addEventListener('shown.bs.modal', () => {
                     
                     <li class="nav-item">
                         <a href="{{ path('app_evenement_index') }}" class="nav-link">
-                       <i class="fa-regular fa-calendar-days"></i>
+                       <i class="fa fa-arrow-up" aria-hidden="true"></i>
                         <p style="font-size: 15px; font-weight: bold;">
                             AXES
                         </p>
@@ -395,10 +395,9 @@ myModal.addEventListener('shown.bs.modal', () => {
                         </p>
                         </a>
                     </li>
-
-
                     
-                   
+
+
                     {#<li class="nav-item">
                         <a href="{{ path('app_carburant_index') }}" class="nav-link">
                        <i class="fa-solid fa-gas-pump"></i>
@@ -420,6 +419,14 @@ myModal.addEventListener('shown.bs.modal', () => {
                        <i class="fa-solid fa-car-burst"></i>
                         <p- style="font-size: 15px; font-weight: bold;">
                              Assurances
+                        </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_signateur_index') }}" class="nav-link">
+                       <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                        <p style="font-size: 15px; font-weight: bold;">
+                            Signateurs
                         </p>
                         </a>
                     </li>

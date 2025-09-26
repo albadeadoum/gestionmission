@@ -67,25 +67,44 @@ final class AgentController extends AbstractController
     }
 
     #[Route('/search', name: 'agent_search', methods: ['GET'])]
-public function search(Request $request, AgentRepository $agentRepository): JsonResponse
+public function search(Request $request, AgentRepository $agentRepository, EvenementRepository $evenementRepository): JsonResponse
 {
     $q = $request->query->get('q', '');
-    $agents = $agentRepository->createQueryBuilder('a')
+    $evenementId = $request->query->get('evenementId');
+
+    $evenement = $evenementRepository->find($evenementId);
+    if (!$evenement) {
+        return new JsonResponse([], 400); // Pas d’événement trouvé
+    }
+
+    $debut = $evenement->getDebut();
+    $fin = $evenement->getFin();
+
+    $qb = $agentRepository->createQueryBuilder('a')
         ->where('a.nom LIKE :q OR a.prenom LIKE :q')
         ->setParameter('q', '%' . $q . '%')
-        ->setMaxResults(10)
-        ->getQuery()
-        ->getResult();
+        ->setMaxResults(10);
 
-    $data = [];
-    foreach ($agents as $agent) {
-        $data[] = [
-            'id' => $agent->getId(),
-            'nom' => $agent->getNom(),
-            'prenom' => $agent->getPrenom(),
-            'service' => $agent->getService(),
-        ];
-    }
+    // Exclure les agents déjà occupés
+    $qb->andWhere('NOT EXISTS (
+        SELECT 1 FROM App\Entity\Evenement e2
+        JOIN e2.agents ag
+        WHERE ag = a
+        AND e2.debut <= :fin
+        AND e2.fin >= :debut
+    )')
+    ->setParameter('debut', $debut)
+    ->setParameter('fin', $fin);
+
+    $agents = $qb->getQuery()->getResult();
+
+    $data = array_map(fn($agent) => [
+        'id' => $agent->getId(),
+        'nom' => $agent->getNom(),
+        'prenom' => $agent->getPrenom(),
+        'service' => $agent->getService(),
+    ], $agents);
+
     return new JsonResponse($data);
 }
 
@@ -143,23 +162,7 @@ public function search(Request $request, AgentRepository $agentRepository): Json
         ], Response::HTTP_BAD_REQUEST);
     }
 
-    /*#[Route('/{id}/edit', name: 'app_agent_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Agent $agent, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(AgentType::class, $agent);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_agent_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('agent/edit.html.twig', [
-            'agent' => $agent,
-            'form' => $form,
-        ]);
-    }#*/
+    
 
     #[Route('/{id}', name: 'app_agent_delete', methods: ['POST'])]
     public function delete(Request $request, Agent $agent, EntityManagerInterface $entityManager): Response

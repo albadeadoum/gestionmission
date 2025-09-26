@@ -1,4 +1,14 @@
-{{ form_start(form) }}
+{#{{ form_start(form) }}
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}#}
+
+{{ form_start(form, {
+    'attr': {'id': 'editMissionForm'},
+    'action': path('app_mission_edit', {'id': mission.id}),
+    'method': 'POST'
+}) }}
+    {{ form_widget(form._token) }}
+    <button type="submit" class="btn btn-success mt-3" > <i class="fas fa-save"></i> Mettre à jour </button>
 {{ form_end(form) }}
+

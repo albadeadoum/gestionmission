@@ -39,26 +39,26 @@
          </div>
     </div>#}
 
-<figure style="font-size: 14pt;">
-  <blockquote class="blockquote" style="font-size: 20pt;">
-    <h3>Objet: {{ evenement.titre }}  </h3>
-  </blockquote>
-  <figcaption class="blockquote-footer">
-        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }}</cite>
-    </figcaption>
+<figure style="font-size: 12pt;">
+    <blockquote class="blockquote" style="font-size: 16pt;">
+        <h3>Objet: {{ evenement.titre }}  
+        
+        </h3>
+        <h3>Axe: {{ evenement.destination }}  </h3>
+    </blockquote>
     <figcaption class="blockquote-footer">
-        Bailleur: <cite title="Source Title">{{ evenement.mission.Bailleur }}</cite>
-           
+        Type de la mission: <cite title="Source Title">{{ evenement.mission.Type }}</cite> 
     </figcaption>
-</figure>
+    
+    
+    </figure>
 
 <div class="row align-items-start">
        <div class="col-6">
             <!-- Form Element sizes -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Missions<a href="{{ path('app_for_mission', {'id':  evenement.id}) }}" class="btn btn-secondary">
-                <i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF;"></i></a></h3> 
+                <h3 class="card-title">Missions</h3> 
                 
                 <a href="{{ path('etat_mission_avance_pdf', {evenementId: evenement.id}) }}" 
                 class="btn btn-sm btn-primary" style="float: right;" target="_blank">
@@ -83,10 +83,7 @@
               <div class="card-body">
                   <table class="table table-bordered">
                         <tbody>
-                            <tr>
-                                <th>Objet</th>
-                                <td>{{ evenement.titre }}</td>
-                            </tr>
+                            
                             <tr>
                                 <th>Date début</th>
                                 <td>{{ evenement.debut ? evenement.debut|date('d-m-Y') : '' }}</td>
@@ -128,6 +125,11 @@
                                         Aucun chauffeur assigné
                                     {% endif %}
                                 </td>
+                            </tr>
+                            <tr>
+                                <th>Véhicule</th>
+                                <td>{{ evenement.Vehicule }} <a href="{{ path('app_for_mission', {'id':  evenement.id}) }}" class="btn btn-secondary" style=" float: right;">
+                                <i class="fa-solid fa-screwdriver-wrench" style="color: #FFFFF; float: right;"></i></a></td>
                             </tr>
                             <tr>
                                 <th>Destination</th>
@@ -380,6 +382,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addAgentModalLabel">Ajouter des agents à la mission</h5>
+        <a  style="float: right;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMotoModal"><i class="fa-sharp fa-solid fa-plus"></i></a>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"><i class="fa fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="modal-body">
@@ -443,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             timeout = setTimeout(function() {
-                fetch('/agent/search?q=' + encodeURIComponent(query))
+                fetch('/agent/search?q=' + encodeURIComponent(query) + '&evenementId=' + evenementId)
                     .then(response => response.json())
                     .then(data => {
                         resultsList.innerHTML = '';

@@ -19,7 +19,7 @@
                 <th>Imatriculation</th>
                 <th>Marque</th>
                 <th>Etat</th>
-                <th>Reservation</th>
+                {#<th>Reservation</th>#}
                 <th>assurance</th>
                 {#<th>vidange</th>
                 <th>à vidanger</th>
@@ -38,20 +38,7 @@
                 <td><a {% if vehicule.Etat == "Bon" %}class="btn btn-success"
                        {% else %}class="btn btn-danger"{% endif %}>{{ vehicule.Etat }}</a>
                 </td>
-                <td>
-                    {% set currentDate = "now"|date("Y-m-d") %}
-                    {% set nombre = 0 %}
-                    {% for evenement in vehicule.evenements %}
-                    {% if evenement.debut.format("Y-m-d") > currentDate %}
-                    {% set nombre =  nombre + 1 %}
-                    {% endif %}
-                    {% endfor %}
-                    {% if nombre > 0 %}   
-                        <a class="btn btn-warning">{{ nombre }} - Réservation</a>
-                    {% endif %}
-                    
                 
-                </td>
                 <td>
                     {% set assurances_en_cours = vehicule.assurances|filter(a => a.fin > 'now'|date('Y-m-d'))|sort((a, b) => a.fin <=> b.fin) %}
                     {% set assurances_expirees = vehicule.assurances|filter(a => a.fin <= 'now'|date('Y-m-d'))|sort((a, b) => b.fin <=> a.fin) %}
@@ -94,6 +81,16 @@
                                     {% endif %}
                                     {% if vehiculeLibre == true %}
                                     <a class="btn btn-success">Disponible</a>
+                                    {% endif %}
+                                    {% set currentDate = "now"|date("Y-m-d") %}
+                                    {% set nombre = 0 %}
+                                    {% for evenement in vehicule.evenements %}
+                                    {% if evenement.debut.format("Y-m-d") > currentDate %}
+                                    {% set nombre =  nombre + 1 %}
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% if nombre > 0 %}   
+                                        <a class="btn btn-warning">{{ nombre }} - Réservation</a>
                                     {% endif %}
                 </td>
                 {#<td>
@@ -181,7 +178,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Modifier l'Assurance</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
                 </div>
                 <div class="modal-body">
                     <div id="editVehiculeForm"></div> {# Le formulaire sera chargé ici #}

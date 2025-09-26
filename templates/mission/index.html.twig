@@ -20,7 +20,7 @@
                 <th>Numero</th>
                 <th>Objet</th>
                 <th>Bailleur</th>
-                <th>nombres d'axe</th>
+                <th>Nombres d'axe</th>
                 <th></th>
             </tr>
         </thead>
@@ -34,8 +34,10 @@
                 <td>
                     <a href="{{ path('app_for_mission_evenement', {'id': mission.id}) }}" class="btn "><i class="fa-solid fa-list fa-2xl" style="color: #4980df;"></i></a>
                     {#<a href="{{ path('app_mission_show', {'id': mission.id}) }}">show</a>#}
-                    <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>
-                    
+                    {#<a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"  ></i></a>#}
+                    <a href="#" class="btn btn-warning edit-btn_mission" data-id="{{ mission.id }}">
+                        <i class="fas fa-edit"></i> 
+                    </a>
                     <a class="btn">{{ include('mission/_delete_form.html.twig') }}</a>
                 </td>
             </tr>
@@ -72,10 +74,74 @@
     </div>
 </div>
 
+ <!-- Modal Bootstrap pour l'édition -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Modifier des donnée chauffeur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+                </div>
+                <div class="modal-body">
+                    <div id="editModalContent"></div> {# Le formulaire sera chargé ici #}
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
 $.extend(true, $.fn.dataTable.defaults, {
     "order": [[0, "desc"]]  // toutes les tables trieront sur la 1ère colonne en DESC
 });
+
+
+// Gestion de l'édition des assurances
+                    document.querySelectorAll(".edit-btn_mission").forEach(button => {
+                        button.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            const missionId = this.getAttribute("data-id");
+
+                            fetch(`/mission/${missionId}/edit`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.form) {
+                                    document.getElementById("editModalContent").innerHTML = data.form;
+                                    const editModal = new bootstrap.Modal(document.getElementById("editModal"));
+                                    editModal.show();
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors du chargement du formulaire :", error));
+                        });
+
+
+                       
+                    // Soumission du formulaire d'édition en AJAX
+                    document.addEventListener("submit", function (event) {
+                        if (event.target && event.target.matches("#editMissionForm")) {
+                            event.preventDefault();
+                            const form = event.target;
+                            const formData = new FormData(form);
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("les données chaffeur mise à jour avec succès !");
+                                    location.reload(); // Recharger la page après la modification
+                                } else {
+                                    alert("Erreur : " + data.errors);
+                                }
+                            })
+                            .catch(error => console.error("Erreur lors de la mise à jour :", error));
+                        }
+                    });
+            });
 
 </script>
 

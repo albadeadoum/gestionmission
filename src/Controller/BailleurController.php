@@ -117,23 +117,6 @@ final class BailleurController extends AbstractController
         ], Response::HTTP_BAD_REQUEST);
     }
 
-    /*#[Route('/{id}/edit', name: 'app_bailleur_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Bailleur $bailleur, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(BailleurType::class, $bailleur);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_bailleur_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('bailleur/edit.html.twig', [
-            'bailleur' => $bailleur,
-            'form' => $form,
-        ]);
-    }*/
 
     #[Route('/{id}', name: 'app_bailleur_delete', methods: ['POST'])]
     public function delete(Request $request, Bailleur $bailleur, EntityManagerInterface $entityManager): Response

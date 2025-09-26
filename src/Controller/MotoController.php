@@ -118,24 +118,7 @@ final class MotoController extends AbstractController{
         ], Response::HTTP_BAD_REQUEST);
     }
     
-    /*#[Route('/{id}/edit', name: 'app_moto_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Moto $moto, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(MotoType::class, $moto);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_moto_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('moto/edit.html.twig', [
-            'moto' => $moto,
-            'form' => $form,
-        ]);
-    }*/
-
+   
     #[Route('/{id}', name: 'app_moto_delete', methods: ['POST'])]
     public function delete(Request $request, Moto $moto, EntityManagerInterface $entityManager): Response
     {

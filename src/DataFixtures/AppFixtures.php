@@ -13,11 +13,12 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
-        for ($i = 1; $i <= 25; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $agent = new Agent();
             $agent->setNom($faker->lastName);
             $agent->setPrenom($faker->firstName);
             $agent->setService($faker->city);
+            $agent->setFonction($faker->jobTitle);
             $agent->setLienEmpl($faker->city);
 
             $manager->persist($agent);

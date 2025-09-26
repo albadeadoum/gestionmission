@@ -89,31 +89,7 @@ class VehiculeController extends AbstractController
         ]);
     }
 
-   /* #[Route('/{id}', name: 'app_vehicule_show', methods: ['GET'])]
-    public function show(Vehicule $vehicule): Response
-    {
-        return $this->render('vehicule/show.html.twig', [
-            'vehicule' => $vehicule,
-        ]);
-    }*/
-
-   /* #[Route('/{id}/edit', name: 'app_vehicule_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Vehicule $vehicule, VehiculeRepository $vehiculeRepository): Response
-    {
-        $form = $this->createForm(VehiType::class, $vehicule);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $vehiculeRepository->save($vehicule, true);
-
-            return $this->redirectToRoute('app_vehicule_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('vehicule/edit.html.twig', [
-            'vehicule' => $vehicule,
-            'form' => $form,
-        ]);
-    }*/
+   
 
 
     #[Route('/{id}/edit', name: 'app_vehicule_edit', methods: ['GET', 'POST'])]
